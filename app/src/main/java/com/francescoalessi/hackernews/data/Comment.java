@@ -40,7 +40,7 @@ public class Comment
             comment.id = object.getInt("id");
             comment.text = object.optString("content", "");
             comment.author = object.optString("user");
-            comment.time = object.optInt("time");
+            comment.time = object.optLong("time");
             comment.level = object.optInt("level");
             comment.place = place;
             comment.storyId = storyId;

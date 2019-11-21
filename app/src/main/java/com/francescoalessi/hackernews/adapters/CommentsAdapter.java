@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Html;
 import android.text.Layout;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import com.francescoalessi.hackernews.data.Item;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.StoriesViewHolder>
@@ -57,7 +60,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
             Comment mCurrent = mCommentsArray.get(position);
             holder.mUserTextView.setText(mCurrent.author);
             holder.mContentTextView.setText(Html.fromHtml(mCurrent.text));
-            holder.mTimeAgoTextView.setText(mCurrent.time + "");
+            CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(mCurrent.time*1000);
+            holder.mTimeAgoTextView.setText(timeAgo);
             float density = context.getResources().getDisplayMetrics().density;
             ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) holder.mConstraintLayout.getLayoutParams();
             marginParams.setMargins(Math.round(8*density*mCurrent.level), marginParams.topMargin, marginParams.rightMargin, marginParams.bottomMargin);
@@ -94,7 +98,6 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
         TextView mTimeAgoTextView;
         ImageView mCommentColor;
         ConstraintLayout mConstraintLayout;
-        boolean mIsExpanded = true;
 
         StoriesViewHolder(@NonNull View itemView)
         {
