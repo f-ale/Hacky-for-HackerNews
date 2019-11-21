@@ -3,6 +3,7 @@ package com.francescoalessi.hackernews.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +17,18 @@ import com.francescoalessi.hackernews.MainActivity;
 import com.francescoalessi.hackernews.R;
 import com.francescoalessi.hackernews.ReadCommentsActivity;
 import com.francescoalessi.hackernews.data.Item;
+import com.francescoalessi.hackernews.data.Story;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesViewHolder>
 {
-    private ArrayList<Item> mStoriesArray;
+    private List<Story> mStoriesArray;
     private LayoutInflater mInflater;
 
     public StoriesAdapter(Context context)
@@ -44,17 +49,17 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesV
     {
         if (mStoriesArray != null)
         {
-            Item mCurrent = mStoriesArray.get(position);
+            Story mCurrent = mStoriesArray.get(position);
             holder.mTitleTextView.setText(mCurrent.title);
             holder.mUpvotesTextView.setText(mCurrent.score + " points");
-            holder.mCommentsButton.setText(mCurrent.descendants + "");
+            holder.mCommentsButton.setText(mCurrent.comments + "");
             String fullUrl = mCurrent.url;
             try
             {
-                URL url = new URL(fullUrl);
+                URI url = new URI(fullUrl);
                 holder.mDomainTextView.setText(url.getHost());
             }
-            catch(MalformedURLException e)
+            catch(URISyntaxException e)
             {
                 e.printStackTrace();
             }
@@ -72,9 +77,9 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesV
             return 0;
     }
 
-    public void setStories(ArrayList<Item> items)
+    public void setStories(List<Story> stories)
     {
-        mStoriesArray = items;
+        mStoriesArray = stories;
         notifyDataSetChanged();
     }
 
@@ -104,7 +109,7 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesV
         {
             Context context = view.getContext();
             int position = getLayoutPosition();
-            if(mStoriesArray.get(position).descendants > 0)
+            if(mStoriesArray.get(position).comments > 0)
             {
                 // Launch story view activity
                 Intent intent = new Intent(context, ReadCommentsActivity.class);

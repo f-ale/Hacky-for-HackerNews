@@ -21,15 +21,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.francescoalessi.hackernews.MainActivity;
 import com.francescoalessi.hackernews.R;
 import com.francescoalessi.hackernews.ReadCommentsActivity;
+import com.francescoalessi.hackernews.data.Comment;
 import com.francescoalessi.hackernews.data.Item;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.StoriesViewHolder>
 {
-    private ArrayList<Item> mCommentsArray;
+    private List<Comment> mCommentsArray;
     private LayoutInflater mInflater;
     private Context context;
 
@@ -52,16 +54,16 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
     {
         if (mCommentsArray != null)
         {
-            Item mCurrent = mCommentsArray.get(position);
-            holder.mUserTextView.setText(mCurrent.by);
+            Comment mCurrent = mCommentsArray.get(position);
+            holder.mUserTextView.setText(mCurrent.author);
             holder.mContentTextView.setText(Html.fromHtml(mCurrent.text));
-            holder.mTimeAgoTextView.setText(mCurrent.timeAgo);
+            holder.mTimeAgoTextView.setText(mCurrent.time + "");
             float density = context.getResources().getDisplayMetrics().density;
             ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) holder.mConstraintLayout.getLayoutParams();
             marginParams.setMargins(Math.round(8*density*mCurrent.level), marginParams.topMargin, marginParams.rightMargin, marginParams.bottomMargin);
 
             if(mCurrent.level != 0)
-                holder.mCommentColor.setImageDrawable(new ColorDrawable(stringToColor(mCurrent.by, mCurrent.level)));
+                holder.mCommentColor.setImageDrawable(new ColorDrawable(stringToColor(mCurrent.author, mCurrent.level)));
             else
                 holder.mCommentColor.setImageDrawable(null);
             //holder.mCommentCardView.setCardElevation(holder.mCommentCardView.getCardElevation() - 1 * mCurrent.level * density);
@@ -79,13 +81,13 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
             return 0;
     }
 
-    public void setComments(ArrayList<Item> items)
+    public void setComments(List<Comment> comments)
     {
-        mCommentsArray = items;
+        mCommentsArray = comments;
         notifyDataSetChanged();
     }
 
-    class StoriesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    class StoriesViewHolder extends RecyclerView.ViewHolder
     {
         TextView mUserTextView;
         TextView mContentTextView;
@@ -103,14 +105,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
             mTimeAgoTextView = itemView.findViewById(R.id.tv_time_ago);
             mCommentColor = itemView.findViewById(R.id.iv_comment_color);
             mConstraintLayout = itemView.findViewById(R.id.comment_layout);
-            itemView.setOnClickListener(this);
 
-        }
-
-        @Override
-        public void onClick(View view)
-        {
-            mIsExpanded = !mIsExpanded;
         }
     }
 

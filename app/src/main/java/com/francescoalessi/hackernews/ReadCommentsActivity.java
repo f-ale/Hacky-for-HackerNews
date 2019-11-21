@@ -2,6 +2,8 @@ package com.francescoalessi.hackernews;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,35 +22,38 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.francescoalessi.hackernews.adapters.CommentsAdapter;
+import com.francescoalessi.hackernews.data.Comment;
 import com.francescoalessi.hackernews.data.Item;
+import com.francescoalessi.hackernews.models.CommentsViewModel;
+import com.francescoalessi.hackernews.models.CommentsViewModelFactory;
+import com.francescoalessi.hackernews.models.StoriesViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
 {
     int storyId = -1;
     Item story;
-    ArrayList<Item> comments = new ArrayList<>();
 
     RecyclerView mCommentsRecyclerView;
     CommentsAdapter mCommentsAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
     RequestQueue queue;
+    CommentsViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read_comments);
-        setTitle("");
 
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setRefreshing(true);
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.refresh_progress_1,
                 R.color.refresh_progress_2,
@@ -71,10 +76,33 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
 
         queue = Volley.newRequestQueue(this);
 
-        fetchComments();
+        CommentsViewModelFactory factory = new CommentsViewModelFactory(getApplication(), storyId);
+        mViewModel = ViewModelProviders.of(this, factory).get(CommentsViewModel.class);
+        mViewModel.getComments().observe(this, new Observer<List<Comment>>() {
+            @Override
+            public void onChanged(List<Comment> comments)
+            {
+                mCommentsAdapter.setComments(comments);
+            }
+        });
+
+        if(savedInstanceState == null)
+        {
+            swipeRefreshLayout.setRefreshing(true);
+            fetchComments();
+        }
+
+        mViewModel.getStoryTitle().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String title)
+            {
+                setTitle(title);
+            }
+        });
+
     }
 
-    private void populateComments(Item story, JSONArray comments)
+    private void populateComments(Item story, JSONArray comments, ArrayList<Item> commentsList)
     {
         try
         {
@@ -82,8 +110,8 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
             {
                 Item item = Item.parseNodeApiItem(comments.getJSONObject(i));
                 item.storyId = story.id;
-                this.comments.add(item);
-                populateComments(story, item.children);
+                commentsList.add(item);
+                populateComments(story, item.children, commentsList);
             }
         }
         catch (JSONException e)
@@ -105,8 +133,12 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
                     {
                         story = Item.parseNodeApiItem(response);
                         setTitle(story.title);
-                        populateComments(story, story.children);
-                        mCommentsAdapter.setComments(comments);
+                        ArrayList<Item> comments = new ArrayList<>();
+                        populateComments(story, story.children, comments);
+                        for(int i = 0; i < comments.size(); i++)
+                        {
+                            mViewModel.insert(Comment.parseItem(comments.get(i), i));
+                        }
                         swipeRefreshLayout.setRefreshing(false);
                     }
                 }, new Response.ErrorListener()
@@ -125,7 +157,6 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
     @Override
     public void onRefresh()
     {
-        comments = new ArrayList<>();
         fetchComments();
     }
 }
