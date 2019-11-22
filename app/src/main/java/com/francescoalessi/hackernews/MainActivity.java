@@ -118,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         {
             int item = topItems[i];
 
+            final boolean isLastRequest = i == 199;
+
             Log.d("HERE", item + "");
             String url = "https://hacker-news.firebaseio.com/v0/item/" + item + ".json";
             final int finalI = i;
@@ -129,7 +131,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         public void onResponse(JSONObject response)
                         {
                             mViewModel.insert(Story.parse(response, finalI));
-                            swipeRefreshLayout.setRefreshing(false);
+                            if(isLastRequest)
+                                swipeRefreshLayout.setRefreshing(false);
                         }
                     }, new Response.ErrorListener()
                     {

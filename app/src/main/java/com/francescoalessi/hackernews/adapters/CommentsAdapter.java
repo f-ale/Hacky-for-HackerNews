@@ -1,40 +1,30 @@
 package com.francescoalessi.hackernews.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Html;
-import android.text.Layout;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.francescoalessi.hackernews.MainActivity;
 import com.francescoalessi.hackernews.R;
-import com.francescoalessi.hackernews.ReadCommentsActivity;
 import com.francescoalessi.hackernews.data.Comment;
-import com.francescoalessi.hackernews.data.Item;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.StoriesViewHolder>
 {
-    private List<Comment> mCommentsArray;
+    private List<Comment> mComments;
     private LayoutInflater mInflater;
     private Context context;
 
@@ -55,31 +45,47 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
     @Override
     public void onBindViewHolder(@NonNull StoriesViewHolder holder, int position)
     {
-        if (mCommentsArray != null)
+        if (mComments != null)
         {
-            Comment mCurrent = mCommentsArray.get(position);
-            holder.mUserTextView.setText(mCurrent.author);
-            holder.mContentTextView.setText(Html.fromHtml(mCurrent.text));
-            CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(mCurrent.time*1000);
-            holder.mTimeAgoTextView.setText(timeAgo);
+            Comment mCurrent = mComments.get(position);
             float density = context.getResources().getDisplayMetrics().density;
             ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) holder.mConstraintLayout.getLayoutParams();
-            marginParams.setMargins(Math.round(8*density*mCurrent.level), marginParams.topMargin, marginParams.rightMargin, marginParams.bottomMargin);
 
-            if(mCurrent.level != 0)
-                holder.mCommentColor.setImageDrawable(new ColorDrawable(stringToColor(mCurrent.author, mCurrent.level)));
+            if(mCurrent.collapsed)
+            {
+                holder.mConstraintLayout.setVisibility(View.GONE);
+                holder.mContentTextView.setVisibility(View.GONE);
+                holder.mTimeAgoTextView.setVisibility(View.GONE);
+                holder.mUserTextView.setVisibility(View.GONE);
+                marginParams.setMargins(marginParams.leftMargin, marginParams.topMargin, marginParams.rightMargin, 0);
+            }
             else
-                holder.mCommentColor.setImageDrawable(null);
-            //holder.mCommentCardView.setCardElevation(holder.mCommentCardView.getCardElevation() - 1 * mCurrent.level * density);
+            {
+                holder.mConstraintLayout.setVisibility(View.VISIBLE);
+                holder.mContentTextView.setVisibility(View.VISIBLE);
+                holder.mTimeAgoTextView.setVisibility(View.VISIBLE);
+                holder.mUserTextView.setVisibility(View.VISIBLE);
+
+                holder.mUserTextView.setText(mCurrent.author);
+                holder.mContentTextView.setText(Html.fromHtml(mCurrent.text));
+                CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(mCurrent.time*1000);
+                holder.mTimeAgoTextView.setText(timeAgo);
+                marginParams.setMargins(Math.round(8*density*mCurrent.level), marginParams.topMargin, marginParams.rightMargin, Math.round(1*density));
+
+                if(mCurrent.level != 0)
+                    holder.mCommentColor.setImageDrawable(new ColorDrawable(stringToColor(mCurrent.author, mCurrent.level)));
+                else
+                    holder.mCommentColor.setImageDrawable(null);
+            }
         }
     }
 
     @Override
     public int getItemCount()
     {
-        if (mCommentsArray != null)
+        if (mComments != null)
         {
-            return mCommentsArray.size();
+            return mComments.size();
         }
         else
             return 0;
@@ -87,11 +93,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
 
     public void setComments(List<Comment> comments)
     {
-        mCommentsArray = comments;
+        mComments = comments;
         notifyDataSetChanged();
     }
 
-    class StoriesViewHolder extends RecyclerView.ViewHolder
+    class StoriesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView mUserTextView;
         TextView mContentTextView;
@@ -102,13 +108,50 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
         StoriesViewHolder(@NonNull View itemView)
         {
             super(itemView);
-
             mUserTextView = itemView.findViewById(R.id.tv_comment_author);
             mContentTextView = itemView.findViewById(R.id.tv_comment_text);
             mTimeAgoTextView = itemView.findViewById(R.id.tv_time_ago);
             mCommentColor = itemView.findViewById(R.id.iv_comment_color);
             mConstraintLayout = itemView.findViewById(R.id.comment_layout);
+            itemView.setOnClickListener(this);
+            mContentTextView.setOnClickListener(this);
 
+        }
+
+        @Override
+        public void onClick(View view)
+        {
+            if(view instanceof TextView)
+            {
+                TextView textView = (TextView) view;
+                if(!(textView.getSelectionEnd() == -1 && textView.getSelectionStart() == -1))
+                    return;
+            }
+            int position = getLayoutPosition()+1;
+            Comment thisComment = mComments.get(getLayoutPosition());
+            thisComment.childrenCollapsed = !thisComment.childrenCollapsed;
+            while(position < mComments.size())
+            {
+                Comment comment = mComments.get(position);
+                Log.d("COLLAPSE", comment.author + ": " + comment.level + ", " + thisComment.author + ": " + thisComment.level);
+                if(comment.level <= thisComment.level)
+                    break;
+                else
+                {
+                    if(thisComment.childrenCollapsed)
+                    {
+                        comment.collapsed = true;
+                    }
+                    else
+                    {
+                        comment.collapsed = false;
+                    }
+                    comment.childrenCollapsed = false;
+
+                    notifyItemChanged(position);
+                }
+                position++;
+            }
         }
     }
 

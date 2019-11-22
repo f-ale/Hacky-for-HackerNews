@@ -32,6 +32,11 @@ public class Comment
     public long time;
 
     @Ignore
+    public boolean collapsed = false;
+    @Ignore
+    public boolean childrenCollapsed = false;
+
+    @Ignore
     public static Comment parse(JSONObject object, int place, int storyId)
     {
         Comment comment = new Comment();
