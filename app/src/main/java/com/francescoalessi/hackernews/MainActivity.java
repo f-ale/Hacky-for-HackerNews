@@ -3,6 +3,7 @@ package com.francescoalessi.hackernews;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -62,6 +63,33 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         mStoriesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         queue = Volley.newRequestQueue(this);
 
+        mStoriesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                LinearLayoutManager layoutManager = ((LinearLayoutManager)recyclerView.getLayoutManager());
+
+                if (layoutManager != null && (layoutManager.findLastVisibleItemPosition() >= layoutManager.getItemCount() - 10) && !swipeRefreshLayout.isRefreshing()) {
+
+                    final int amount = mViewModel.loadMoreStories();
+                    if(amount != -1)
+                    {
+                        swipeRefreshLayout.setRefreshing(true);
+                        fetchStories(queue, amount-20, amount);
+                        topStories.removeObservers((AppCompatActivity) recyclerView.getContext());
+                        topStories = mViewModel.getTopStories();
+                        topStories.observe((AppCompatActivity) recyclerView.getContext(), new Observer<List<Story>>() {
+                            @Override
+                            public void onChanged(List<Story> stories)
+                            {
+                                mAdapter.setStories(stories);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
         topStories = mViewModel.getTopStories();
         topStories.observe(this, new Observer<List<Story>>() {
             @Override
@@ -107,20 +135,24 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 Log.d("HERE", error.toString());
             }
         });
-
         // Add the request to the RequestQueue.
         queue.add(jsonArrayRequest);
     }
 
     private void fetchStories(RequestQueue queue)
     {
-        for(int i = 0; i < 200; i++)
+        fetchStories(queue, 0, 20);
+    }
+
+    private void fetchStories(RequestQueue queue, int start, int end)
+    {
+        for(int i = start; i < end; i++)
         {
             int item = topItems[i];
 
-            final boolean isLastRequest = i == 199;
+            final boolean isLastRequest = i == end-1;
 
-            Log.d("HERE", item + "");
+            Log.d("FETCHING STORY", item + "");
             String url = "https://hacker-news.firebaseio.com/v0/item/" + item + ".json";
             final int finalI = i;
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -143,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             Log.d("HERE", error.toString());
                         }
                     });
-
             queue.add(jsonObjectRequest);
         }
     }

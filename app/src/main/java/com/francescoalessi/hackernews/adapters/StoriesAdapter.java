@@ -16,14 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.francescoalessi.hackernews.MainActivity;
 import com.francescoalessi.hackernews.R;
 import com.francescoalessi.hackernews.ReadCommentsActivity;
-import com.francescoalessi.hackernews.data.Item;
 import com.francescoalessi.hackernews.data.Story;
-
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesViewHolder>

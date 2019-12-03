@@ -134,6 +134,7 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
                         story = Item.parseNodeApiItem(response);
                         setTitle(story.title);
                         ArrayList<Item> comments = new ArrayList<>();
+                        mViewModel.deleteAllComments();
                         populateComments(story, story.children, comments);
                         for(int i = 0; i < comments.size(); i++)
                         {

@@ -10,10 +10,13 @@ import androidx.room.PrimaryKey;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static androidx.room.ForeignKey.CASCADE;
+
 @Entity(tableName = "comments", foreignKeys =
         @ForeignKey(entity = Story.class,
         parentColumns = "id",
-        childColumns = "story_id")
+        childColumns = "story_id",
+        onDelete = CASCADE)
 )
 
 public class Comment

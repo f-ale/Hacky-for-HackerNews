@@ -7,7 +7,6 @@ import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -77,6 +76,14 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
                 else
                     holder.mCommentColor.setImageDrawable(null);
             }
+            if(mCurrent.childrenCollapsed)
+            {
+                holder.mCollapsedImageView.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                holder.mCollapsedImageView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -103,6 +110,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
         TextView mContentTextView;
         TextView mTimeAgoTextView;
         ImageView mCommentColor;
+        ImageView mCollapsedImageView;
         ConstraintLayout mConstraintLayout;
 
         StoriesViewHolder(@NonNull View itemView)
@@ -113,6 +121,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
             mTimeAgoTextView = itemView.findViewById(R.id.tv_time_ago);
             mCommentColor = itemView.findViewById(R.id.iv_comment_color);
             mConstraintLayout = itemView.findViewById(R.id.comment_layout);
+            mCollapsedImageView = itemView.findViewById(R.id.iv_collapsed);
             itemView.setOnClickListener(this);
             mContentTextView.setOnClickListener(this);
 
@@ -130,6 +139,16 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
             int position = getLayoutPosition()+1;
             Comment thisComment = mComments.get(getLayoutPosition());
             thisComment.childrenCollapsed = !thisComment.childrenCollapsed;
+
+            if(thisComment.childrenCollapsed)
+            {
+                mCollapsedImageView.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                mCollapsedImageView.setVisibility(View.GONE);
+            }
+
             while(position < mComments.size())
             {
                 Comment comment = mComments.get(position);

@@ -11,10 +11,10 @@ import org.json.JSONObject;
 @Entity(tableName = "stories")
 public class Story
 {
+
     @PrimaryKey
     public int id;
 
-    @NonNull
     public int place;
 
     @NonNull

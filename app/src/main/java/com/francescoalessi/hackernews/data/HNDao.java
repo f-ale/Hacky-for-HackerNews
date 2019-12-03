@@ -18,20 +18,17 @@ public interface HNDao
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Comment comment);
 
-    @Query("DELETE FROM stories")
-    void deleteAllStories();
-
-    @Delete
-    void delete(Story story);
-
-    @Delete
-    void delete(Comment comment);
-
     @Query("SELECT * FROM comments WHERE story_id = :storyId ORDER BY place ASC")
     LiveData<List<Comment>> getCommentsForStory(int storyId);
 
+    @Query("DELETE FROM comments WHERE story_id = :storyId")
+    void deleteCommentsForStory(int storyId);
+
     @Query("SELECT * FROM stories ORDER BY place ASC LIMIT :amount")
     LiveData<List<Story>> getTopStories(int amount);
+
+    @Query("DELETE FROM stories WHERE place = :place AND id != :id")
+    void deleteStoryWithPlaceIfDifferent(int place, int id);
 
     @Query("SELECT title FROM stories WHERE id = :storyId")
     LiveData<String> getStoryTitle(int storyId);

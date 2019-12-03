@@ -8,18 +8,16 @@ import java.util.List;
 public class HNRepository
 {
     private HNDao dao;
-    private LiveData<List<Story>> topStories;
 
     public HNRepository(Application application)
     {
         HNRoomDatabase db = HNRoomDatabase.getDatabase(application);
         dao = db.dao();
-        topStories = dao.getTopStories(200);
     }
 
-    public LiveData<List<Story>> getTopStories()
+    public LiveData<List<Story>> getTopStories(int amount)
     {
-        return topStories;
+        return dao.getTopStories(amount);
     }
 
     public LiveData<List<Comment>> getCommentsForStory(int storyId) { return dao.getCommentsForStory(storyId); }
@@ -46,6 +44,28 @@ public class HNRepository
             public void run()
             {
                 dao.insert(comment);
+            }
+        });
+    }
+
+    public void deleteStoryWithPlace(final int place, final int id)
+    {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run()
+            {
+                dao.deleteStoryWithPlaceIfDifferent(place, id);
+            }
+        });
+    }
+
+    public void deleteCommentsForStory(final int storyId)
+    {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run()
+            {
+                dao.deleteCommentsForStory(storyId);
             }
         });
     }
