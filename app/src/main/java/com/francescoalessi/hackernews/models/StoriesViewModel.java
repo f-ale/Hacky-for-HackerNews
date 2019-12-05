@@ -12,7 +12,6 @@ import java.util.List;
 
 public class StoriesViewModel extends AndroidViewModel
 {
-
     private HNRepository mRepository;
     private LiveData<List<Story>> mTopStories;
     private int loadedStories;
@@ -23,29 +22,24 @@ public class StoriesViewModel extends AndroidViewModel
         loadedStories = 20;
         mTopStories = mRepository.getTopStories(loadedStories);
     }
+    public LiveData<Boolean> isRefreshing() { return mRepository.getIsRefreshing(); }
 
     public LiveData<List<Story>> getTopStories() { return mTopStories; }
 
-    public int loadMoreStories()
+    public LiveData<List<Story>> loadMoreStories()
     {
         if(loadedStories < 500-20)
         {
             loadedStories += 20;
             mTopStories = mRepository.getTopStories(loadedStories);
-            return loadedStories;
+            return mTopStories;
         }
         else
-            return -1;
+            return mTopStories;
     }
 
-    public int getLoadedStoriesAmount()
+    public void refreshStories()
     {
-        return loadedStories;
-    }
-
-    public void insert(Story story)
-    {
-        mRepository.deleteStoryWithPlace(story.place, story.id);
-        mRepository.insert(story);
+        mRepository.refreshStories(loadedStories);
     }
 }
