@@ -3,21 +3,13 @@ package com.francescoalessi.hackernews.data;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static androidx.room.ForeignKey.CASCADE;
-
-@Entity(tableName = "comments", foreignKeys =
-        @ForeignKey(entity = Story.class,
-        parentColumns = "id",
-        childColumns = "story_id",
-        onDelete = CASCADE)
-)
+@Entity(tableName = "comments")
 
 public class Comment
 {

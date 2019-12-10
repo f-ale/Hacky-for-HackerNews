@@ -38,12 +38,10 @@ import java.util.List;
 public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
 {
     int storyId = -1;
-    Item story;
 
     RecyclerView mCommentsRecyclerView;
     CommentsAdapter mCommentsAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
-    RequestQueue queue;
     CommentsViewModel mViewModel;
 
     @Override
@@ -74,23 +72,24 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-        queue = Volley.newRequestQueue(this);
-
         CommentsViewModelFactory factory = new CommentsViewModelFactory(getApplication(), storyId);
         mViewModel = ViewModelProviders.of(this, factory).get(CommentsViewModel.class);
         mViewModel.getComments().observe(this, new Observer<List<Comment>>() {
             @Override
             public void onChanged(List<Comment> comments)
             {
+                Log.d("SETTING COMMENTS", storyId + ", " + comments.toString());
                 mCommentsAdapter.setComments(comments);
             }
         });
 
-        if(savedInstanceState == null)
-        {
-            swipeRefreshLayout.setRefreshing(true);
-            fetchComments();
-        }
+        mViewModel.isRefreshing().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isRefreshing)
+            {
+                swipeRefreshLayout.setRefreshing(isRefreshing);
+            }
+        });
 
         mViewModel.getStoryTitle().observe(this, new Observer<String>() {
             @Override
@@ -102,62 +101,9 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
 
     }
 
-    private void populateComments(Item story, JSONArray comments, ArrayList<Item> commentsList)
-    {
-        try
-        {
-            for (int i = 0; i < comments.length(); i++)
-            {
-                Item item = Item.parseNodeApiItem(comments.getJSONObject(i));
-                item.storyId = story.id;
-                commentsList.add(item);
-                populateComments(story, item.children, commentsList);
-            }
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void fetchComments()
-    {
-        String url = "https://api.hackerwebapp.com/item/" + storyId;
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        story = Item.parseNodeApiItem(response);
-                        setTitle(story.title);
-                        ArrayList<Item> comments = new ArrayList<>();
-                        mViewModel.deleteAllComments();
-                        populateComments(story, story.children, comments);
-                        for(int i = 0; i < comments.size(); i++)
-                        {
-                            mViewModel.insert(Comment.parseItem(comments.get(i), i));
-                        }
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                }, new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-                        // TODO: Handle error
-                        Log.d("HERE", error.toString());
-                    }
-                });
-
-        queue.add(jsonObjectRequest);
-    }
-
     @Override
     public void onRefresh()
     {
-        fetchComments();
+        mViewModel.refreshComments();
     }
 }

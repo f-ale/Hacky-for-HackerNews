@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HNRepository
@@ -26,7 +27,8 @@ public class HNRepository
     private HNDao dao;
     private RequestQueue queue;
     private int[] topStoriesIDs = new int[500];
-    private MutableLiveData<Boolean> isRefreshing;
+    private MutableLiveData<Boolean> isRefreshingStories;
+    private MutableLiveData<Boolean> isRefreshingComments;
 
     public HNRepository(Application application)
     {
@@ -34,8 +36,68 @@ public class HNRepository
         dao = db.dao();
         queue = Volley.newRequestQueue(application);
 
-        isRefreshing = new MutableLiveData<>(false);
+        isRefreshingStories = new MutableLiveData<>(false);
+        isRefreshingComments = new MutableLiveData<>(false);
         getStories(20);
+    }
+
+    private void populateComments(Item story, JSONArray comments, ArrayList<Item> commentsList)
+    {
+        try
+        {
+            for (int i = 0; i < comments.length(); i++)
+            {
+                Item item = Item.parseNodeApiItem(comments.getJSONObject(i));
+                item.storyId = story.id;
+                commentsList.add(item);
+                populateComments(story, item.children, commentsList);
+            }
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void fetchCommentsForStory(int storyId)
+    {
+        String url = "https://api.hackerwebapp.com/item/" + storyId;
+        isRefreshingComments.setValue(true);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        final Item story = Item.parseNodeApiItem(response);
+                        final ArrayList<Item> comments = new ArrayList<>();
+
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                dao.deleteCommentsForStory(story.id);
+                                populateComments(story, story.children, comments);
+                                for(int i = 0; i < comments.size(); i++)
+                                {
+                                    dao.insert(Comment.parseItem(comments.get(i), i));
+                                }
+                                isRefreshingComments.postValue(false);
+                            }
+                        });
+                    }
+                }, new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        // TODO: Handle error
+                        Log.d("HERE", error.toString());
+                    }
+                });
+
+        queue.add(jsonObjectRequest);
     }
 
     private void getStories(final int amount)
@@ -65,16 +127,15 @@ public class HNRepository
             public void onErrorResponse(VolleyError error)
             {
                 Log.d("RepositoryFetching", error.toString());
-                isRefreshing.postValue(false);
+                isRefreshingStories.postValue(false);
             }
         });
-
         queue.add(jsonArrayRequest);
     }
 
     private void fetchStories(int start, int end)
     {
-        isRefreshing.setValue(true);
+        isRefreshingStories.setValue(true);
 
         for(int i = start; i < end; i++)
         {
@@ -92,7 +153,7 @@ public class HNRepository
                         {
                             insert(Story.parse(response, finalI));
                             if(isLastRequest)
-                                isRefreshing.postValue(false);
+                                isRefreshingStories.postValue(false);
                         }
                     }, new Response.ErrorListener()
                     {
@@ -101,7 +162,7 @@ public class HNRepository
                         {
                             // TODO: Handle error
                             Log.d("RepositoryFetching", error.toString());
-                            isRefreshing.postValue(false);
+                            isRefreshingStories.postValue(false);
                         }
                     });
             queue.add(jsonObjectRequest);
@@ -118,13 +179,22 @@ public class HNRepository
     {
         getStories(amount);
     }
+    public void refreshComments(int storyId) { fetchCommentsForStory(storyId); }
 
-    public LiveData<Boolean> getIsRefreshing()
+    public LiveData<Boolean> getIsRefreshingStories()
     {
-        return isRefreshing;
+        return isRefreshingStories;
+    }
+    public LiveData<Boolean> getIsRefreshingComments()
+    {
+        return isRefreshingComments;
     }
 
-    public LiveData<List<Comment>> getCommentsForStory(int storyId) { return dao.getCommentsForStory(storyId); }
+    public LiveData<List<Comment>> getCommentsForStory(int storyId)
+    {
+        fetchCommentsForStory(storyId);
+        return dao.getCommentsForStory(storyId);
+    }
 
     public LiveData<String> getStoryTitle(int storyId) { return dao.getStoryTitle(storyId); }
 
@@ -137,29 +207,6 @@ public class HNRepository
             {
                 dao.deleteStoryWithPlaceIfDifferent(story.place, story.id);
                 dao.insert(story);
-            }
-        });
-    }
-
-    public void insert(final Comment comment)
-    {
-        AppExecutors.getInstance().diskIO().execute(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                dao.insert(comment);
-            }
-        });
-    }
-
-    public void deleteCommentsForStory(final int storyId)
-    {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run()
-            {
-                dao.deleteCommentsForStory(storyId);
             }
         });
     }

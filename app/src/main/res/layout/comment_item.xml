@@ -63,7 +63,7 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_comment_author"
-        app:srcCompat="@drawable/uncollapsed_black_24dp" />
-
+        app:srcCompat="@drawable/uncollapsed_black_24dp"
+        app:drawableTint="@color/color_on_primary"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

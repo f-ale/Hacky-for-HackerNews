@@ -22,7 +22,7 @@ public class StoriesViewModel extends AndroidViewModel
         loadedStories = 20;
         mTopStories = mRepository.getTopStories(loadedStories);
     }
-    public LiveData<Boolean> isRefreshing() { return mRepository.getIsRefreshing(); }
+    public LiveData<Boolean> isRefreshing() { return mRepository.getIsRefreshingStories(); }
 
     public LiveData<List<Story>> getTopStories() { return mTopStories; }
 

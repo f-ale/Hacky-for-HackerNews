@@ -13,7 +13,6 @@ import java.util.List;
 
 public class CommentsViewModel extends AndroidViewModel
 {
-
     private HNRepository mRepository;
     private LiveData<List<Comment>> mComments;
     private LiveData<String> mStoryTitle;
@@ -27,8 +26,8 @@ public class CommentsViewModel extends AndroidViewModel
         this.storyId = storyId;
     }
 
-    public void insert(Comment comment) { mRepository.insert(comment); }
     public LiveData<List<Comment>> getComments() { return mComments; }
     public LiveData<String> getStoryTitle() { return mStoryTitle; }
-    public void deleteAllComments() { mRepository.deleteCommentsForStory(storyId);}
+    public LiveData<Boolean> isRefreshing() { return mRepository.getIsRefreshingComments(); }
+    public void refreshComments() { mRepository.refreshComments(storyId);}
 }
