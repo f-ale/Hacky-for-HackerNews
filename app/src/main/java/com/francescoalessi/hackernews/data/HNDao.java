@@ -33,6 +33,6 @@ public interface HNDao
     @Query("DELETE FROM stories WHERE place = :place AND id != :id")
     void deleteStoryWithPlaceIfDifferent(int place, int id);
 
-    @Query("SELECT title FROM stories WHERE id = :storyId")
-    LiveData<String> getStoryTitle(int storyId);
+    @Query("SELECT * FROM stories WHERE id = :storyId")
+    LiveData<Story> getStory(int storyId);
 }

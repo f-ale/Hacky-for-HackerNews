@@ -25,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 import com.francescoalessi.hackernews.adapters.CommentsAdapter;
 import com.francescoalessi.hackernews.data.Comment;
 import com.francescoalessi.hackernews.data.Item;
+import com.francescoalessi.hackernews.data.Story;
 import com.francescoalessi.hackernews.models.CommentsViewModel;
 import com.francescoalessi.hackernews.models.CommentsViewModelFactory;
 import com.francescoalessi.hackernews.models.StoriesViewModel;
@@ -92,13 +93,13 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
             }
         });
 
-        final LiveData<String> titleLivedata = mViewModel.getStoryTitle();
-        titleLivedata.observe(this, new Observer<String>() {
+        final LiveData<Story> storyLivedata = mViewModel.getStory();
+        storyLivedata.observe(this, new Observer<Story>() {
             @Override
-            public void onChanged(String title)
+            public void onChanged(Story story)
             {
-                setTitle(title);
-                titleLivedata.removeObserver(this);
+                setTitle(story.title);
+                storyLivedata.removeObserver(this);
             }
         });
 

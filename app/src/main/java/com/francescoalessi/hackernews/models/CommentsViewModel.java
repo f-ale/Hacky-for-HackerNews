@@ -15,19 +15,19 @@ public class CommentsViewModel extends AndroidViewModel
 {
     private HNRepository mRepository;
     private LiveData<List<Comment>> mComments;
-    private LiveData<String> mStoryTitle;
+    private LiveData<Story> mStory;
     private int storyId;
 
     CommentsViewModel(Application application, int storyId) {
         super(application);
         mRepository = HNRepository.getInstance(application);
         mComments = mRepository.getCommentsForStory(storyId);
-        mStoryTitle = mRepository.getStoryTitle(storyId);
+        mStory = mRepository.getStory(storyId);
         this.storyId = storyId;
     }
 
     public LiveData<List<Comment>> getComments() { return mComments; }
-    public LiveData<String> getStoryTitle() { return mStoryTitle; }
+    public LiveData<Story> getStory() { return mStory; }
     public LiveData<Boolean> isRefreshing() { return mRepository.getIsRefreshingComments(); }
     public void refreshComments() { mRepository.refreshComments(storyId);}
 }

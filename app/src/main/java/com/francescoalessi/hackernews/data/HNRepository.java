@@ -223,7 +223,7 @@ public class HNRepository
         return dao.getCommentsForStory(storyId);
     }
 
-    public LiveData<String> getStoryTitle(int storyId) { return dao.getStoryTitle(storyId); }
+    public LiveData<Story> getStory(int storyId) { return dao.getStory(storyId); }
 
     private void insert(final Story story)
     {
