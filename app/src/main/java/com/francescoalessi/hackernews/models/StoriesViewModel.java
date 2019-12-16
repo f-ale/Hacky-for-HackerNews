@@ -18,7 +18,7 @@ public class StoriesViewModel extends AndroidViewModel
 
     public StoriesViewModel(Application application) {
         super(application);
-        mRepository = new HNRepository(application);
+        mRepository = HNRepository.getInstance(application);
         loadedStories = 20;
         mTopStories = mRepository.getTopStories(loadedStories);
     }

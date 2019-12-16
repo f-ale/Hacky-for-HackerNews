@@ -21,7 +21,7 @@ public abstract class HNRoomDatabase extends RoomDatabase
                 if (INSTANCE == null)
                 {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            HNRoomDatabase.class, "recipe_database").
+                            HNRoomDatabase.class, "hn_database").
                             fallbackToDestructiveMigration().build(); // TODO: remove destructive migration eventually
                 }
             }

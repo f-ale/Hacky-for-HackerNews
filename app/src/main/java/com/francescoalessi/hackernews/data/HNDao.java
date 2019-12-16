@@ -24,6 +24,9 @@ public interface HNDao
     @Query("DELETE FROM comments WHERE story_id = :storyId")
     void deleteCommentsForStory(int storyId);
 
+    @Query("DELETE FROM comments WHERE story_id NOT IN (SELECT id FROM stories)")
+    int deleteParentlessComments();
+
     @Query("SELECT * FROM stories ORDER BY place ASC LIMIT :amount")
     LiveData<List<Story>> getTopStories(int amount);
 

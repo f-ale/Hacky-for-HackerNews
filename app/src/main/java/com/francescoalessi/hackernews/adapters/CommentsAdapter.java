@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +67,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
                 holder.mUserTextView.setVisibility(View.VISIBLE);
 
                 holder.mUserTextView.setText(mCurrent.author);
-                holder.mContentTextView.setText(Html.fromHtml(mCurrent.text));
+                holder.mContentTextView.setText(mCurrent.text);
+                Linkify.addLinks(holder.mContentTextView, Linkify.WEB_URLS);
+                holder.mContentTextView.setText(Html.fromHtml(holder.mContentTextView.getText().toString()));
                 CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(mCurrent.time*1000);
                 holder.mTimeAgoTextView.setText(timeAgo);
                 marginParams.setMargins(Math.round(8*density*mCurrent.level), marginParams.topMargin, marginParams.rightMargin, Math.round(1*density));

@@ -20,7 +20,7 @@ public class CommentsViewModel extends AndroidViewModel
 
     CommentsViewModel(Application application, int storyId) {
         super(application);
-        mRepository = new HNRepository(application);
+        mRepository = HNRepository.getInstance(application);
         mComments = mRepository.getCommentsForStory(storyId);
         mStoryTitle = mRepository.getStoryTitle(storyId);
         this.storyId = storyId;

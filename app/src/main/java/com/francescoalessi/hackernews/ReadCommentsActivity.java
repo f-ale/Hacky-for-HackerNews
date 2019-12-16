@@ -2,6 +2,7 @@ package com.francescoalessi.hackernews;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -91,11 +92,13 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
             }
         });
 
-        mViewModel.getStoryTitle().observe(this, new Observer<String>() {
+        final LiveData<String> titleLivedata = mViewModel.getStoryTitle();
+        titleLivedata.observe(this, new Observer<String>() {
             @Override
             public void onChanged(String title)
             {
                 setTitle(title);
+                titleLivedata.removeObserver(this);
             }
         });
 

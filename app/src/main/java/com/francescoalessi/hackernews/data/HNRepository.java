@@ -24,13 +24,14 @@ import java.util.List;
 
 public class HNRepository
 {
+    private static HNRepository instance;
     private HNDao dao;
     private RequestQueue queue;
     private int[] topStoriesIDs = new int[500];
     private MutableLiveData<Boolean> isRefreshingStories;
     private MutableLiveData<Boolean> isRefreshingComments;
 
-    public HNRepository(Application application)
+    private HNRepository(Application application)
     {
         HNRoomDatabase db = HNRoomDatabase.getDatabase(application);
         dao = db.dao();
@@ -39,6 +40,16 @@ public class HNRepository
         isRefreshingStories = new MutableLiveData<>(false);
         isRefreshingComments = new MutableLiveData<>(false);
         getStories(20);
+    }
+
+    public static HNRepository getInstance(Application application)
+    {
+        if(instance == null)
+        {
+            instance = new HNRepository(application);
+        }
+
+        return instance;
     }
 
     private void populateComments(Item story, JSONArray comments, ArrayList<Item> commentsList)
@@ -120,6 +131,7 @@ public class HNRepository
                         e.printStackTrace();
                     }
                 }
+                deleteParentlessComments();
                 fetchStories(0, amount);
             }
         }, new Response.ErrorListener() {
@@ -153,7 +165,9 @@ public class HNRepository
                         {
                             insert(Story.parse(response, finalI));
                             if(isLastRequest)
+                            {
                                 isRefreshingStories.postValue(false);
+                            }
                         }
                     }, new Response.ErrorListener()
                     {
@@ -169,6 +183,18 @@ public class HNRepository
         }
     }
 
+    private void deleteParentlessComments()
+    {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run()
+            {
+                int i = dao.deleteParentlessComments();
+                Log.d("DELETINGCOMMENTS", i + "");
+            }
+        });
+    }
+
     public LiveData<List<Story>> getTopStories(int amount)
     {
         fetchStories(0, amount);
@@ -179,6 +205,7 @@ public class HNRepository
     {
         getStories(amount);
     }
+
     public void refreshComments(int storyId) { fetchCommentsForStory(storyId); }
 
     public LiveData<Boolean> getIsRefreshingStories()

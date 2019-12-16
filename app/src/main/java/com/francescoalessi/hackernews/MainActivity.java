@@ -101,11 +101,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 mAdapter.setStories(stories);
             }
         });
-
-        if(savedInstanceState == null)
-        {
-            mViewModel.refreshStories();
-        }
     }
 
     @Override
