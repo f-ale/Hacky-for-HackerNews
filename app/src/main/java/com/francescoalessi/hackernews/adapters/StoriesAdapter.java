@@ -3,7 +3,6 @@ package com.francescoalessi.hackernews.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,7 @@ import com.francescoalessi.hackernews.data.Story;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Locale;
 
 public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesViewHolder>
 {
@@ -46,8 +46,9 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesV
         {
             Story mCurrent = mStoriesArray.get(position);
             holder.mTitleTextView.setText(mCurrent.title);
-            holder.mUpvotesTextView.setText(mCurrent.score + " points");
-            holder.mCommentsButton.setText(mCurrent.comments + "");
+            holder.mUpvotesTextView.setText(holder.mUpvotesTextView.getResources().getString(R.string.points, mCurrent.score));
+            holder.mCommentsButton.setText(String.format(Locale.ENGLISH, "%d", mCurrent.comments));
+
             String fullUrl = mCurrent.url;
             try
             {

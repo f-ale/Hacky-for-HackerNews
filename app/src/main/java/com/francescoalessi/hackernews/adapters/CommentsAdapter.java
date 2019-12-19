@@ -1,5 +1,7 @@
 package com.francescoalessi.hackernews.adapters;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -8,10 +10,12 @@ import android.text.format.DateUtils;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -19,11 +23,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.francescoalessi.hackernews.R;
 import com.francescoalessi.hackernews.data.Comment;
+import com.francescoalessi.hackernews.data.Story;
+import com.francescoalessi.hackernews.utils.Utils;
 
 import java.util.List;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.StoriesViewHolder>
 {
+    private Story mStory;
     private List<Comment> mComments;
     private LayoutInflater mInflater;
     private Context context;
@@ -42,14 +49,49 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
         return new StoriesViewHolder(itemView);
     }
 
+    private void setTextViews(StoriesViewHolder holder, String author, String content)
+    {
+        holder.mUserTextView.setText(author);
+        holder.mContentTextView.setText(content);
+        Linkify.addLinks(holder.mContentTextView, Linkify.WEB_URLS);
+        holder.mContentTextView.setText(Utils.trimTrailingWhitespace(Html.fromHtml(holder.mContentTextView.getText().toString())));
+    }
+
+    private void setTimeAgo(StoriesViewHolder holder, long time)
+    {
+        CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(time*1000);
+        holder.mTimeAgoTextView.setText(timeAgo);
+    }
+
+    // TODO: Refactor onBindViewHolder
     @Override
     public void onBindViewHolder(@NonNull StoriesViewHolder holder, int position)
     {
+        ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) holder.mConstraintLayout.getLayoutParams();
+        float density = context.getResources().getDisplayMetrics().density;
+
+        if(position == 0 && mStory != null)
+        {
+            holder.mConstraintLayout.setVisibility(View.VISIBLE);
+            holder.mContentTextView.setVisibility(View.VISIBLE);
+            holder.mTimeAgoTextView.setVisibility(View.INVISIBLE);
+            holder.mUserTextView.setVisibility(View.VISIBLE);
+            holder.mCommentColor.setImageDrawable(null);
+            holder.mCollapsedImageView.setVisibility(View.INVISIBLE);
+
+            setTextViews(holder, mStory.author, mStory.text);
+            marginParams.setMargins(0, marginParams.topMargin, marginParams.rightMargin, Math.round(1*density));
+            return;
+        }
+        else
+        {
+            if(mStory != null)
+                position--;
+        }
+
         if (mComments != null)
         {
             Comment mCurrent = mComments.get(position);
-            float density = context.getResources().getDisplayMetrics().density;
-            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) holder.mConstraintLayout.getLayoutParams();
 
             if(mCurrent.collapsed)
             {
@@ -57,6 +99,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
                 holder.mContentTextView.setVisibility(View.GONE);
                 holder.mTimeAgoTextView.setVisibility(View.GONE);
                 holder.mUserTextView.setVisibility(View.GONE);
+
                 marginParams.setMargins(marginParams.leftMargin, marginParams.topMargin, marginParams.rightMargin, 0);
             }
             else
@@ -66,19 +109,18 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
                 holder.mTimeAgoTextView.setVisibility(View.VISIBLE);
                 holder.mUserTextView.setVisibility(View.VISIBLE);
 
-                holder.mUserTextView.setText(mCurrent.author);
-                holder.mContentTextView.setText(mCurrent.text);
-                Linkify.addLinks(holder.mContentTextView, Linkify.WEB_URLS);
-                holder.mContentTextView.setText(Html.fromHtml(holder.mContentTextView.getText().toString()));
-                CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(mCurrent.time*1000);
-                holder.mTimeAgoTextView.setText(timeAgo);
                 marginParams.setMargins(Math.round(8*density*mCurrent.level), marginParams.topMargin, marginParams.rightMargin, Math.round(1*density));
 
+                setTextViews(holder, mCurrent.author, mCurrent.text);
+                setTimeAgo(holder, mCurrent.time);
+
+
                 if(mCurrent.level != 0)
-                    holder.mCommentColor.setImageDrawable(new ColorDrawable(stringToColor(mCurrent.author, mCurrent.level)));
+                    holder.mCommentColor.setImageDrawable(new ColorDrawable(stringToColor(mCurrent.author)));
                 else
                     holder.mCommentColor.setImageDrawable(null);
             }
+
             if(mCurrent.childrenCollapsed)
             {
                 holder.mCollapsedImageView.setVisibility(View.VISIBLE);
@@ -107,6 +149,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
         notifyDataSetChanged();
     }
 
+    public void setStory(Story story)
+    {
+        mStory = story;
+        notifyDataSetChanged();
+    }
+
     class StoriesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView mUserTextView;
@@ -116,7 +164,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
         ImageView mCollapsedImageView;
         ConstraintLayout mConstraintLayout;
 
-        StoriesViewHolder(@NonNull View itemView)
+        StoriesViewHolder(@NonNull final View itemView)
         {
             super(itemView);
             mUserTextView = itemView.findViewById(R.id.tv_comment_author);
@@ -127,7 +175,26 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
             mCollapsedImageView = itemView.findViewById(R.id.iv_collapsed);
             itemView.setOnClickListener(this);
             mContentTextView.setOnClickListener(this);
+            mContentTextView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view)
+                {
+                    String text = mUserTextView.getText() + "\n\n" + mContentTextView.getText();
+                    ClipData comment = ClipData.newPlainText("HN Comment", text);
+                    ClipboardManager clipboard = (ClipboardManager)
+                            context.getSystemService(Context.CLIPBOARD_SERVICE);
 
+                    if(clipboard != null)
+                    {
+                        clipboard.setPrimaryClip(comment);
+                        Toast.makeText(context, "Comment copied", Toast.LENGTH_SHORT).show();
+                        view.playSoundEffect(SoundEffectConstants.CLICK);
+                        return true;
+                    }
+
+                    return false;
+                }
+            });
         }
 
         @Override
@@ -136,48 +203,62 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
             if(view instanceof TextView)
             {
                 TextView textView = (TextView) view;
+                //textView.setTextIsSelectable(false);
                 if(!(textView.getSelectionEnd() == -1 && textView.getSelectionStart() == -1))
                     return;
             }
+
             int position = getLayoutPosition()+1;
-            Comment thisComment = mComments.get(getLayoutPosition());
-            thisComment.childrenCollapsed = !thisComment.childrenCollapsed;
+            if(mStory != null)
+                position--;
 
-            if(thisComment.childrenCollapsed)
+            if(position > 0)
             {
-                mCollapsedImageView.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                mCollapsedImageView.setVisibility(View.GONE);
-            }
+                Comment thisComment = mComments.get(position-1);
+                thisComment.childrenCollapsed = !thisComment.childrenCollapsed;
 
-            while(position < mComments.size())
-            {
-                Comment comment = mComments.get(position);
-                Log.d("COLLAPSE", comment.author + ": " + comment.level + ", " + thisComment.author + ": " + thisComment.level);
-                if(comment.level <= thisComment.level)
-                    break;
-                else
+                int counter = 0;
+                while(position < mComments.size())
                 {
-                    if(thisComment.childrenCollapsed)
-                    {
-                        comment.collapsed = true;
-                    }
+                    Comment comment = mComments.get(position);
+                    Log.d("COLLAPSE", comment.author + ": " + comment.level + ", " + thisComment.author + ": " + thisComment.level);
+                    if(comment.level <= thisComment.level)
+                        break;
                     else
                     {
-                        comment.collapsed = false;
-                    }
-                    comment.childrenCollapsed = false;
+                        if(thisComment.childrenCollapsed)
+                        {
+                            comment.collapsed = true;
+                            counter++;
+                        }
+                        else
+                        {
+                            comment.collapsed = false;
+                        }
+                        comment.childrenCollapsed = false;
 
-                    notifyItemChanged(position);
+                        notifyItemChanged(position);
+                    }
+                    position++;
                 }
-                position++;
+
+                if(counter == 0)
+                    thisComment.childrenCollapsed = false;
+
+                if(thisComment.childrenCollapsed)
+                {
+                    mCollapsedImageView.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    mCollapsedImageView.setVisibility(View.GONE);
+                }
             }
+
         }
     }
 
-    private int stringToColor(String string, int level)
+    private int stringToColor(String string)
     {
         int hash = string.hashCode();
         int r = (hash & 0xFF0000) >> 16;

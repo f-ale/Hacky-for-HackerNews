@@ -26,6 +26,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:paddingBottom="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,7 +63,8 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tv_comment_author"
-        android:contentDescription="Collapsed comments indicator"
+        android:visibility="invisible"
+        android:contentDescription="@string/collapsed_comments_indicator"
         app:srcCompat="@drawable/collapsed_24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

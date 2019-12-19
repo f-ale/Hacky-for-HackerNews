@@ -1,50 +1,40 @@
 package com.francescoalessi.hackernews;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
-import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.francescoalessi.hackernews.adapters.CommentsAdapter;
 import com.francescoalessi.hackernews.data.Comment;
-import com.francescoalessi.hackernews.data.Item;
 import com.francescoalessi.hackernews.data.Story;
 import com.francescoalessi.hackernews.models.CommentsViewModel;
 import com.francescoalessi.hackernews.models.CommentsViewModelFactory;
-import com.francescoalessi.hackernews.models.StoriesViewModel;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
 {
-    int storyId = -1;
+    private int storyId = -1;
 
-    RecyclerView mCommentsRecyclerView;
-    CommentsAdapter mCommentsAdapter;
-    SwipeRefreshLayout swipeRefreshLayout;
-    CommentsViewModel mViewModel;
+    private RecyclerView mCommentsRecyclerView;
+    private CommentsAdapter mCommentsAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private CommentsViewModel mViewModel;
+    private Story mStory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -99,10 +89,48 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
             public void onChanged(Story story)
             {
                 setTitle(story.title);
+                if(story.text != null && !story.text.equals(""))
+                    mCommentsAdapter.setStory(story);
+
+                mStory = story;
+
                 storyLivedata.removeObserver(this);
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.read_comments_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
+    {
+        if(item.getItemId() == R.id.action_share)
+        {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, mStory.title + "\n" + "https://news.ycombinator.com/item?id=" + mStory.id);
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, mStory.title);
+            sendIntent.setType("text/plain");
+
+            Intent shareIntent = Intent.createChooser(sendIntent, "Share: " + mStory.title);
+            startActivity(shareIntent);
+        }
+
+        if(item.getItemId() == R.id.action_view_url)
+        {
+            Intent viewIntent = new Intent();
+            viewIntent.setAction(Intent.ACTION_VIEW);
+            viewIntent.setData(Uri.parse(mStory.url));
+            startActivity(viewIntent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

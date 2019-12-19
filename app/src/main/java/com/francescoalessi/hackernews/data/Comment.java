@@ -18,9 +18,7 @@ public class Comment
 
     @ColumnInfo(name="story_id")
     public long storyId;
-    @NonNull
     public String author;
-    @NonNull
     public String text;
     public int place;
     public int level;

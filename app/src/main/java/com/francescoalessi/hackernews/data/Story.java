@@ -16,12 +16,8 @@ public class Story
     public int id;
 
     public int place;
-
-    @NonNull
     public String title;
-    @NonNull
     public String author;
-
     public String text;
     public String url;
     public int score;

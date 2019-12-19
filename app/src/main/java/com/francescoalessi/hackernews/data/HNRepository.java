@@ -197,7 +197,7 @@ public class HNRepository
 
     public LiveData<List<Story>> getTopStories(int amount)
     {
-        fetchStories(0, amount);
+        fetchStories(amount-20, amount);
         return dao.getTopStories(amount);
     }
 

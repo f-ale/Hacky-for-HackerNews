@@ -24,7 +24,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="Base64 encoding and decoding at almost the speed of a memory copy"
+            tools:text="Base64 encoding and decoding at almost the speed of a memory copy"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toStartOf="@+id/btn_post_comments"
             app:layout_constraintStart_toStartOf="parent"

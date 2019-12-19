@@ -4,29 +4,27 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class Item
 {
     public int id;
-    public boolean deleted;
-    public String type;
+    private boolean deleted;
+    private String type;
     public String by;
     public int time;
     public String text;
-    public boolean dead;
-    public int parent;
-    public int poll;
-    public int[] kids;
-    public String url;
-    public int score;
-    public String title;
-    public JSONArray parts;
-    public int descendants;
+    private boolean dead;
+    private int parent;
+    private int poll;
+    private int[] kids;
+    private String url;
+    private int score;
+    private String title;
+    private JSONArray parts;
+    private int descendants;
     public long storyId;
     public JSONArray children;
     public int level;
-    public String timeAgo;
+    private String timeAgo;
 
     public static Item parseNodeApiItem(JSONObject object)
     {
@@ -117,7 +115,7 @@ public class Item
         return item;
     }
 
-    public static int[] parseIntJsonArray(JSONArray array)
+    private static int[] parseIntJsonArray(JSONArray array)
     {
         int[] newArray = null;
         if(array == null)

@@ -1,7 +1,6 @@
 package com.francescoalessi.hackernews;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,33 +11,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.francescoalessi.hackernews.adapters.StoriesAdapter;
 import com.francescoalessi.hackernews.data.Story;
 import com.francescoalessi.hackernews.models.StoriesViewModel;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
 {
-    LiveData<List<Story>> topStories;
-    int[] topItems = new int[500];
+    private LiveData<List<Story>> topStories;
+    private int[] topItems = new int[500];
 
-    RecyclerView mStoriesRecyclerView;
-    StoriesAdapter mAdapter;
-    RequestQueue queue;
-    SwipeRefreshLayout swipeRefreshLayout;
-    StoriesViewModel mViewModel;
+    private RecyclerView mStoriesRecyclerView;
+    private StoriesAdapter mAdapter;
+    private RequestQueue queue;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private StoriesViewModel mViewModel;
 
     public static final String STORY_ID = "story_id";
 
