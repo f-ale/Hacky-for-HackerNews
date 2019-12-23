@@ -1,7 +1,7 @@
 <img src="app/src/main/ic_launcher-web.png" align="left"
 width="100">
 # Hacky for Hacker News
-<img src="github-assets/Hacky.png" align="right" width="200">
+<img src="github-assets/Hacky.png" align="right" width="250">
 <br>
 Hacky is a Hacker News reader app for Android. 
 
