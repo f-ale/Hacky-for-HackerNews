@@ -1,7 +1,7 @@
 <img src="app/src/main/ic_launcher-web.png" align="left"
 width="100">
 # Hacky for Hacker News
-<img src="github-assets/Hacky.png" align="right" width="200">
+<img src="github-assets/Hacky.png" align="right" width="250">
 <br>
 Hacky is a Hacker News reader app for Android. 
 
@@ -11,6 +11,6 @@ Hacky is built with Android Architecture Components following the MVVM design pa
 
 ## License
 
-This project is licensed under the GPLv3 License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GPLv3 License - see the [LICENSE](LICENSE) file for details
 
 
