@@ -105,6 +105,11 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesV
         {
             Context context = view.getContext();
             int position = getLayoutPosition();
+            openComments(context, position);
+        }
+
+        private void openComments(Context context, int position)
+        {
             if(mStoriesArray.get(position).comments > 0)
             {
                 // Launch story view activity
@@ -124,9 +129,17 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesV
                 // Get story URL
                 String url = mStoriesArray.get(position).url;
                 // Launch view intent for story URL
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                context.startActivity(intent);
+                if(url != null && !url.equals(""))
+                {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    context.startActivity(intent);
+                }
+                else
+                {
+                    openComments(context, position);
+                }
+
             }
         }
     }
