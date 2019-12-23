@@ -1,6 +1,5 @@
 package com.francescoalessi.hackernews.data;
 
-import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -9,6 +8,7 @@ import androidx.room.PrimaryKey;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@SuppressWarnings("WeakerAccess")
 @Entity(tableName = "comments")
 
 public class Comment

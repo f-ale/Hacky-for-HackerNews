@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.francescoalessi.hackernews.adapters.StoriesAdapter;
 import com.francescoalessi.hackernews.data.Story;
 import com.francescoalessi.hackernews.models.StoriesViewModel;
@@ -22,11 +20,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
 {
     private LiveData<List<Story>> topStories;
-    private int[] topItems = new int[500];
 
-    private RecyclerView mStoriesRecyclerView;
     private StoriesAdapter mAdapter;
-    private RequestQueue queue;
     private SwipeRefreshLayout swipeRefreshLayout;
     private StoriesViewModel mViewModel;
 
@@ -55,13 +50,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         });
 
-        mStoriesRecyclerView = findViewById(R.id.rv_stories);
+        RecyclerView storiesRecyclerView = findViewById(R.id.rv_stories);
         mAdapter = new StoriesAdapter(this);
-        mStoriesRecyclerView.setAdapter(mAdapter);
-        mStoriesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        queue = Volley.newRequestQueue(this);
+        storiesRecyclerView.setAdapter(mAdapter);
+        storiesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mStoriesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        storiesRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -96,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public void onRefresh()
     {
-        topItems = new int[500];
         mViewModel.refreshStories();
     }
 }

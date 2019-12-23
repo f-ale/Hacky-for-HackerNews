@@ -12,7 +12,7 @@ import java.util.List;
 
 public class StoriesViewModel extends AndroidViewModel
 {
-    private HNRepository mRepository;
+    private final HNRepository mRepository;
     private LiveData<List<Story>> mTopStories;
     private int loadedStories;
 

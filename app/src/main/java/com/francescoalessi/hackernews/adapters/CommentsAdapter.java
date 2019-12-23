@@ -32,8 +32,8 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
 {
     private Story mStory;
     private List<Comment> mComments;
-    private LayoutInflater mInflater;
-    private Context context;
+    private final LayoutInflater mInflater;
+    private final Context context;
 
     public CommentsAdapter(Context context)
     {
@@ -63,7 +63,14 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
         holder.mTimeAgoTextView.setText(timeAgo);
     }
 
-    // TODO: Refactor onBindViewHolder
+    private void setViewsVisibility(StoriesViewHolder holder, int visibility)
+    {
+        holder.mConstraintLayout.setVisibility(visibility);
+        holder.mContentTextView.setVisibility(visibility);
+        holder.mTimeAgoTextView.setVisibility(visibility);
+        holder.mUserTextView.setVisibility(visibility);
+    }
+
     @Override
     public void onBindViewHolder(@NonNull StoriesViewHolder holder, int position)
     {
@@ -95,25 +102,18 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
 
             if(mCurrent.collapsed)
             {
-                holder.mConstraintLayout.setVisibility(View.GONE);
-                holder.mContentTextView.setVisibility(View.GONE);
-                holder.mTimeAgoTextView.setVisibility(View.GONE);
-                holder.mUserTextView.setVisibility(View.GONE);
+                setViewsVisibility(holder, View.GONE);
 
                 marginParams.setMargins(marginParams.leftMargin, marginParams.topMargin, marginParams.rightMargin, 0);
             }
             else
             {
-                holder.mConstraintLayout.setVisibility(View.VISIBLE);
-                holder.mContentTextView.setVisibility(View.VISIBLE);
-                holder.mTimeAgoTextView.setVisibility(View.VISIBLE);
-                holder.mUserTextView.setVisibility(View.VISIBLE);
+                setViewsVisibility(holder, View.VISIBLE);
 
                 marginParams.setMargins(Math.round(8*density*mCurrent.level), marginParams.topMargin, marginParams.rightMargin, Math.round(1*density));
 
                 setTextViews(holder, mCurrent.author, mCurrent.text);
                 setTimeAgo(holder, mCurrent.time);
-
 
                 if(mCurrent.level != 0)
                     holder.mCommentColor.setImageDrawable(new ColorDrawable(stringToColor(mCurrent.author)));
@@ -157,12 +157,12 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
 
     class StoriesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        TextView mUserTextView;
-        TextView mContentTextView;
-        TextView mTimeAgoTextView;
-        ImageView mCommentColor;
-        ImageView mCollapsedImageView;
-        ConstraintLayout mConstraintLayout;
+        final TextView mUserTextView;
+        final TextView mContentTextView;
+        final TextView mTimeAgoTextView;
+        final ImageView mCommentColor;
+        final ImageView mCollapsedImageView;
+        final ConstraintLayout mConstraintLayout;
 
         StoriesViewHolder(@NonNull final View itemView)
         {

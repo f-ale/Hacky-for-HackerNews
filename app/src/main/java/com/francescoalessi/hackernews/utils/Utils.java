@@ -2,6 +2,7 @@ package com.francescoalessi.hackernews.utils;
 
 public class Utils
 {
+    @SuppressWarnings("StatementWithEmptyBody")
     public static CharSequence trimTrailingWhitespace(CharSequence source) {
 
         if(source == null)

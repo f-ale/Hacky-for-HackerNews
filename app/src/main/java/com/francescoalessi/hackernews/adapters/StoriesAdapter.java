@@ -24,7 +24,7 @@ import java.util.Locale;
 public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesViewHolder>
 {
     private List<Story> mStoriesArray;
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
 
     public StoriesAdapter(Context context)
     {
@@ -81,10 +81,10 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoriesAdapter.StoriesV
 
     class StoriesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
-        TextView mTitleTextView;
-        TextView mDomainTextView;
-        Button mCommentsButton;
-        TextView mUpvotesTextView;
+        final TextView mTitleTextView;
+        final TextView mDomainTextView;
+        final Button mCommentsButton;
+        final TextView mUpvotesTextView;
 
         StoriesViewHolder(@NonNull View itemView)
         {

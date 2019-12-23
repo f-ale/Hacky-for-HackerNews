@@ -29,8 +29,6 @@ import java.util.List;
 public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener
 {
     private int storyId = -1;
-
-    private RecyclerView mCommentsRecyclerView;
     private CommentsAdapter mCommentsAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private CommentsViewModel mViewModel;
@@ -49,10 +47,10 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
                 R.color.refresh_progress_2,
                 R.color.refresh_progress_3);
 
-        mCommentsRecyclerView = findViewById(R.id.rv_comments);
+        RecyclerView commentsRecyclerView = findViewById(R.id.rv_comments);
         mCommentsAdapter = new CommentsAdapter(this);
-        mCommentsRecyclerView.setAdapter(mCommentsAdapter);
-        mCommentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        commentsRecyclerView.setAdapter(mCommentsAdapter);
+        commentsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         Intent intent = getIntent();
         if (intent != null)

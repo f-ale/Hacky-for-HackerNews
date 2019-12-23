@@ -25,11 +25,11 @@ import java.util.List;
 public class HNRepository
 {
     private static HNRepository instance;
-    private HNDao dao;
-    private RequestQueue queue;
-    private int[] topStoriesIDs = new int[500];
-    private MutableLiveData<Boolean> isRefreshingStories;
-    private MutableLiveData<Boolean> isRefreshingComments;
+    private final HNDao dao;
+    private final RequestQueue queue;
+    private final int[] topStoriesIDs = new int[500];
+    private final MutableLiveData<Boolean> isRefreshingStories;
+    private final MutableLiveData<Boolean> isRefreshingComments;
 
     private HNRepository(Application application)
     {
@@ -103,8 +103,7 @@ public class HNRepository
                     @Override
                     public void onErrorResponse(VolleyError error)
                     {
-                        // TODO: Handle error
-                        Log.d("HERE", error.toString());
+                        Log.d("FETCH_STORY_COMMENTS", error.toString());
                     }
                 });
 
@@ -138,7 +137,7 @@ public class HNRepository
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                Log.d("RepositoryFetching", error.toString());
+                Log.d("GET_STORIES", error.toString());
                 isRefreshingStories.postValue(false);
             }
         });
@@ -154,7 +153,6 @@ public class HNRepository
             int item = topStoriesIDs[i];
             final boolean isLastRequest = i == end-1;
 
-            Log.d("RepositoryFetching", item + "");
             String url = "https://hacker-news.firebaseio.com/v0/item/" + item + ".json";
             final int finalI = i;
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -174,8 +172,7 @@ public class HNRepository
                         @Override
                         public void onErrorResponse(VolleyError error)
                         {
-                            // TODO: Handle error
-                            Log.d("RepositoryFetching", error.toString());
+                            Log.d("FETCH_STORIES", error.toString());
                             isRefreshingStories.postValue(false);
                         }
                     });
@@ -190,7 +187,6 @@ public class HNRepository
             public void run()
             {
                 int i = dao.deleteParentlessComments();
-                Log.d("DELETINGCOMMENTS", i + "");
             }
         });
     }

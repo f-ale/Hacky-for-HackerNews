@@ -13,10 +13,10 @@ import java.util.List;
 
 public class CommentsViewModel extends AndroidViewModel
 {
-    private HNRepository mRepository;
-    private LiveData<List<Comment>> mComments;
-    private LiveData<Story> mStory;
-    private int storyId;
+    private final HNRepository mRepository;
+    private final LiveData<List<Comment>> mComments;
+    private final LiveData<Story> mStory;
+    private final int storyId;
 
     CommentsViewModel(Application application, int storyId) {
         super(application);
