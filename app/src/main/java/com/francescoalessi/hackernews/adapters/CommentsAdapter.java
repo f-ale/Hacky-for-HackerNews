@@ -208,7 +208,9 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
                     return;
             }
 
+            // Get position of the first child to collapse
             int position = getLayoutPosition()+1;
+
             if(mStory != null)
                 position--;
 
@@ -237,7 +239,10 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
                         }
                         comment.childrenCollapsed = false;
 
-                        notifyItemChanged(position);
+                        if(mStory != null)
+                            notifyItemChanged(position+1);
+                        else
+                            notifyItemChanged(position);
                     }
                     position++;
                 }
