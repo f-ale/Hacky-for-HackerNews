@@ -223,7 +223,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Storie
                 while(position < mComments.size())
                 {
                     Comment comment = mComments.get(position);
-                    Log.d("COLLAPSE", comment.author + ": " + comment.level + ", " + thisComment.author + ": " + thisComment.level);
+                    //Log.d("COLLAPSE", comment.author + ": " + comment.level + ", " + thisComment.author + ": " + thisComment.level);
                     if(comment.level <= thisComment.level)
                         break;
                     else

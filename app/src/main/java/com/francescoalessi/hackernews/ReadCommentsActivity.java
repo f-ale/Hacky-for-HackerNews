@@ -68,7 +68,7 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
             @Override
             public void onChanged(List<Comment> comments)
             {
-                Log.d("SETTING COMMENTS", storyId + ", " + comments.toString());
+                //Log.d("SETTING COMMENTS", storyId + ", " + comments.toString());
                 mCommentsAdapter.setComments(comments);
             }
         });
@@ -118,7 +118,9 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
             sendIntent.setType("text/plain");
 
             Intent shareIntent = Intent.createChooser(sendIntent, "Share: " + mStory.title);
-            startActivity(shareIntent);
+
+            if(sendIntent.resolveActivity(getPackageManager()) != null)
+                startActivity(shareIntent);
         }
 
         if(item.getItemId() == R.id.action_view_url)
@@ -126,7 +128,9 @@ public class ReadCommentsActivity extends AppCompatActivity implements SwipeRefr
             Intent viewIntent = new Intent();
             viewIntent.setAction(Intent.ACTION_VIEW);
             viewIntent.setData(Uri.parse(mStory.url));
-            startActivity(viewIntent);
+
+            if(viewIntent.resolveActivity(getPackageManager()) != null)
+                startActivity(viewIntent);
         }
         return super.onOptionsItemSelected(item);
     }

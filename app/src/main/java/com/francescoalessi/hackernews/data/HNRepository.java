@@ -103,7 +103,7 @@ public class HNRepository
                     @Override
                     public void onErrorResponse(VolleyError error)
                     {
-                        Log.d("FETCH_STORY_COMMENTS", error.toString());
+                        //Log.d("FETCH_STORY_COMMENTS", error.toString());
                     }
                 });
 
@@ -137,7 +137,7 @@ public class HNRepository
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                Log.d("GET_STORIES", error.toString());
+                //Log.d("GET_STORIES", error.toString());
                 isRefreshingStories.postValue(false);
             }
         });
@@ -172,7 +172,7 @@ public class HNRepository
                         @Override
                         public void onErrorResponse(VolleyError error)
                         {
-                            Log.d("FETCH_STORIES", error.toString());
+                            //Log.d("FETCH_STORIES", error.toString());
                             isRefreshingStories.postValue(false);
                         }
                     });
