@@ -3,7 +3,7 @@ package com.francescoalessi.hacky
 import android.app.Application
 import com.francescoalessi.hacky.di.AndroidModule
 import com.francescoalessi.hacky.di.AppComponent
-import com.francescoalessi.pixabaysearch.di.DaggerAppComponent
+import com.francescoalessi.hacky.di.DaggerAppComponent
 
 class HackyApplication : Application()
 {
