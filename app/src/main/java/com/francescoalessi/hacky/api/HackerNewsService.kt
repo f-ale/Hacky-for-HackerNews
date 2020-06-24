@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 interface HackerNewsService {
     /*
-     *  Defines the query to retrieve search results from the HN API
+     *  Defines the queries to retrieve results from the HN API
      */
     @GET("/news")
     suspend fun getPosts(

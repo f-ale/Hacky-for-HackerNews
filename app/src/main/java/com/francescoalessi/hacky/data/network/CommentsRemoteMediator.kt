@@ -15,8 +15,9 @@ import javax.inject.Inject
 
 @ExperimentalPagingApi
 class CommentsRemoteMediator @Inject
-constructor(val hackyDatabase: HackyDatabase,
-            val hackerNewsService: HackerNewsService) : RemoteMediator<Int, Comment>()
+constructor(
+    private val hackyDatabase: HackyDatabase,
+    private val hackerNewsService: HackerNewsService) : RemoteMediator<Int, Comment>()
 {
     var threadId:Int = 23553325
     override suspend fun load(
@@ -31,8 +32,12 @@ constructor(val hackyDatabase: HackyDatabase,
             LoadType.REFRESH ->
                 try
                 {
+                    // Retrieve thread
                     val thread = hackerNewsService.getThread(threadId)
+                    // Unpack comments into a linear structure
                     val comments : MutableList<Comment> = unpackComments(thread.comments.toMutableList(), ArrayList<Comment>(thread.comments_count))
+
+                    // If this is an AskHN thread, we add the thread content as a comment to the comment list
                     if(!thread.content.isNullOrEmpty())
                     {
                         val ask = Comment(
@@ -47,9 +52,11 @@ constructor(val hackyDatabase: HackyDatabase,
 
                         comments.add(0, ask)
                     }
+                    // Set rank and parentId for comments
                     setMetadata(comments, threadId)
 
                     hackyDatabase.withTransaction {
+                        // If we're refreshing, we delete stale comments first
                         if(loadType == LoadType.REFRESH)
                             hackyDatabase.postDao().deleteCommentsForThread(threadId)
                         hackyDatabase.postDao().insertComments(comments)
@@ -67,7 +74,7 @@ constructor(val hackyDatabase: HackyDatabase,
     }
 
     // Turns nested structure into linear
-    fun unpackComments(sourceList: MutableList<Comment>, targetList: MutableList<Comment>) : MutableList<Comment>
+    private fun unpackComments(sourceList: MutableList<Comment>, targetList: MutableList<Comment>) : MutableList<Comment>
     {
         for(comment in sourceList)
         {
@@ -81,7 +88,7 @@ constructor(val hackyDatabase: HackyDatabase,
         return targetList
     }
 
-    fun setMetadata(comments: List<Comment>, threadId:Int)
+    private fun setMetadata(comments: List<Comment>, threadId:Int)
     {
         for(comment in comments)
         {

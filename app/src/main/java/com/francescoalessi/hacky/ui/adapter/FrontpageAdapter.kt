@@ -29,12 +29,15 @@ class FrontpageAdapter : PagingDataAdapter<Post, FrontpageAdapter.ViewHolder>(DI
 
     fun openComments(viewHolder: ViewHolder)
     {
-        viewHolder.itemView.findNavController().navigate(
-            FrontpageFragmentDirections.actionFrontpageToViewCommentsFragment(
-                viewHolder.binding.post?.id ?: -1,
-                viewHolder.binding.post?.title ?: ""
+        if(viewHolder.binding.post?.comments_count ?: 0 > 0)
+        {
+            viewHolder.itemView.findNavController().navigate(
+                FrontpageFragmentDirections.actionFrontpageToViewCommentsFragment(
+                    viewHolder.binding.post?.id ?: -1,
+                    viewHolder.binding.post?.title ?: ""
+                )
             )
-        )
+        }
     }
 
     inner class ViewHolder(val binding: ThreadItemBinding) : RecyclerView.ViewHolder(binding.root)

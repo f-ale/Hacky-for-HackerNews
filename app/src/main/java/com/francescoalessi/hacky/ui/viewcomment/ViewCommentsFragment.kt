@@ -62,6 +62,7 @@ class ViewCommentsFragment : Fragment()
         when(item.itemId)
         {
             R.id.action_share -> {
+                // Share the post in text form
                 val sendIntent = Intent()
                 sendIntent.action = Intent.ACTION_SEND
                 sendIntent.putExtra(
@@ -79,6 +80,7 @@ class ViewCommentsFragment : Fragment()
             }
 
             R.id.action_view_url -> {
+                // View the post URL
                 val viewIntent = Intent()
                 viewIntent.action = Intent.ACTION_VIEW
                 viewIntent.data = Uri.parse(post.url)
@@ -151,7 +153,7 @@ class ViewCommentsFragment : Fragment()
         }
 
         swipe_refresh_layout.setOnRefreshListener {
-            mAdapter.refresh()
+            mAdapter.refresh() // Refresh data when the user requests it
         }
     }
 

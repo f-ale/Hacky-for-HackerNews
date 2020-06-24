@@ -12,11 +12,12 @@ import javax.inject.Inject
 
 @ExperimentalPagingApi
 class PostsRemoteMediator @Inject
-constructor(val hackyDatabase: HackyDatabase,
-            val hackerNewsService: HackerNewsService) : RemoteMediator<Int, Post>()
+constructor(
+    private val hackyDatabase: HackyDatabase,
+    private val hackerNewsService: HackerNewsService) : RemoteMediator<Int, Post>()
 {
-    val startPage:Int = 1
-    var currentPage:Int = startPage
+    private val startPage:Int = 1
+    private var currentPage:Int = startPage
 
     override suspend fun load(
         loadType: LoadType,
@@ -27,13 +28,14 @@ constructor(val hackyDatabase: HackyDatabase,
         {
             LoadType.APPEND ->
             {
+                // Stop if we reach the end of available content
                 if(currentPage >= 10)
                     return MediatorResult.Success(endOfPaginationReached = true)
                 else
                     currentPage+1
             }
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
-            LoadType.REFRESH -> {startPage}
+            LoadType.REFRESH -> {startPage} // When refreshing, we start fetching from the beginning
         }
         try
         {
@@ -43,8 +45,6 @@ constructor(val hackyDatabase: HackyDatabase,
             {
                 i.rank = posts.indexOf(i) + ((currentPage-1) * 30)
             }
-
-            Log.d("Load", "page: $currentPage, type: $loadType")
 
             hackyDatabase.withTransaction {
                 if(loadType == LoadType.REFRESH)
