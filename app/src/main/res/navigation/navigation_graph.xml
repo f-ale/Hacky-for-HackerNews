@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/frontpage">
+
+    <fragment
+        android:id="@+id/frontpage"
+        android:name="com.francescoalessi.hacky.ui.FrontpageFragment"
+        android:label="Hacky">
+        <action
+            android:id="@+id/action_frontpage_to_viewCommentsFragment"
+            app:destination="@id/viewCommentsFragment"
+            app:exitAnim="@anim/slide_to_right"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@anim/slide_from_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewCommentsFragment"
+        android:name="com.francescoalessi.hacky.ui.viewcomment.ViewCommentsFragment"
+        android:label="{title}">
+        <argument
+            android:name="postId"
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="title"
+            android:defaultValue="Post"
+            app:argType="string" />
+    </fragment>
+</navigation>

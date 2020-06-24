@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Hacky</string>
-    <string name="collapsed_comments_indicator">Collapsed comments indicator</string>
+    <string name="app_name">Hacky for HackerNews</string>
+    <string name="collapsed_comments_indicator">Collapsed</string>
+    <string name="no_connection">Couldn\'t connect to the internet.</string>
     <string name="share_link">Share Link</string>
     <string name="view_url">View URL</string>
-    <string name="points">%1$d points</string>
 </resources>
