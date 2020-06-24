@@ -13,7 +13,7 @@ import com.francescoalessi.hacky.model.Post
 interface PostDao
 {
     @Query("SELECT * FROM posts ORDER BY rank")
-    fun getPosts() : PagingSource<Int, Post>
+    fun getPosts(): PagingSource<Int, Post>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPosts(posts: List<Post>)
@@ -22,14 +22,14 @@ interface PostDao
     suspend fun deleteAllPosts()
 
     @Query("SELECT * FROM posts WHERE id == :postId")
-    fun getPostForId(postId:Int) : LiveData<Post>
+    fun getPostForId(postId: Int): LiveData<Post>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertComments(comment:List<Comment>)
+    suspend fun insertComments(comment: List<Comment>)
 
     @Query("DELETE FROM comments WHERE parentId == :threadId")
-    suspend fun deleteCommentsForThread(threadId:Int)
+    suspend fun deleteCommentsForThread(threadId: Int)
 
     @Query("SELECT * FROM comments WHERE comments.parentId == :threadId ORDER BY rank")
-    fun getCommentsForThread(threadId:Int) : PagingSource<Int, Comment>
+    fun getCommentsForThread(threadId: Int): PagingSource<Int, Comment>
 }

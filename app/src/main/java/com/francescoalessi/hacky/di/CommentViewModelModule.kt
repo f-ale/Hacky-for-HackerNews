@@ -8,7 +8,8 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class CommentViewModelModule {
+abstract class CommentViewModelModule
+{
     @Binds
     @IntoMap
     @ViewModelKey(CommentViewModel::class)

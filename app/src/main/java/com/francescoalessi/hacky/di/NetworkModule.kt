@@ -11,6 +11,7 @@ import javax.inject.Singleton
 class NetworkModule
 {
     private val baseUrl = "https://api.hackerwebapp.com"
+
     /*
      *   Provides Retrofit HackerNews Service for injection
      */

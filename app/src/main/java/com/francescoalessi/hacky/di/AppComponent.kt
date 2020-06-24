@@ -1,9 +1,8 @@
-package com.francescoalessi.pixabaysearch.di
+package com.francescoalessi.hacky.di
 
 import com.alexfacciorusso.daggerviewmodel.DaggerViewModelInjectionModule
-import com.francescoalessi.hacky.ui.FrontpageFragment
 import com.francescoalessi.hacky.MainActivity
-import com.francescoalessi.hacky.di.*
+import com.francescoalessi.hacky.ui.FrontpageFragment
 import com.francescoalessi.hacky.ui.viewcomment.ViewCommentsFragment
 import dagger.Component
 import javax.inject.Singleton

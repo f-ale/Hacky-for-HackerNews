@@ -12,15 +12,15 @@ import com.francescoalessi.hacky.model.Post
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class CommentViewModel @Inject constructor(val repository: HackyRepository) : ViewModel()
+class CommentViewModel @Inject constructor(private val repository: HackyRepository) : ViewModel()
 {
     @ExperimentalPagingApi
-    fun getCommentsForThread(threadId:Int): Flow<PagingData<Comment>>
+    fun getCommentsForThread(threadId: Int): Flow<PagingData<Comment>>
     {
         return repository.getCommentsForThread(threadId).cachedIn(viewModelScope)
     }
 
-    fun getPost(postId:Int) : LiveData<Post>
+    fun getPost(postId: Int): LiveData<Post>
     {
         return repository.getPost(postId)
     }

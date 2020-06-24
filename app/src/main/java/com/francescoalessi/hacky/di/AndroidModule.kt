@@ -7,11 +7,11 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class AndroidModule(val application: Application)
+class AndroidModule(private val application: Application)
 {
     @Provides
     @Singleton
-    fun provideApplicationContext() : Context
+    fun provideApplicationContext(): Context
     {
         return application.applicationContext
     }

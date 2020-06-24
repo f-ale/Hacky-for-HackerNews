@@ -2,10 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="comment"
-            type="com.francescoalessi.hacky.model.Comment"/>
+            type="com.francescoalessi.hacky.model.Comment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +18,7 @@
         android:layout_marginBottom="0dp"
         android:background="@color/color_surface"
         android:animateLayoutChanges="true"
-        app:level = "@{comment.level}">
+        app:level="@{comment.level}">
 
         <ImageView
             android:id="@+id/iv_comment_color"
@@ -26,7 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:commentColor="@{comment}"
-            tools:ignore="ContentDescription"/>
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tv_comment_text"

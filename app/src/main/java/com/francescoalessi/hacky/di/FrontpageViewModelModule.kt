@@ -8,7 +8,8 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class FrontpageViewModelModule {
+abstract class FrontpageViewModelModule
+{
     @Binds
     @IntoMap
     @ViewModelKey(FrontpageViewModel::class)

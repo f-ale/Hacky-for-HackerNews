@@ -5,7 +5,8 @@ import androidx.room.RoomDatabase
 import com.francescoalessi.hacky.model.Comment
 import com.francescoalessi.hacky.model.Post
 
-@Database(entities = arrayOf(Post::class, Comment::class), version = 13)
-abstract class HackyDatabase : RoomDatabase() {
+@Database(entities = [Post::class, Comment::class], version = 13)
+abstract class HackyDatabase : RoomDatabase()
+{
     abstract fun postDao(): PostDao
 }

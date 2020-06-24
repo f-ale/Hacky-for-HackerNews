@@ -8,19 +8,21 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class StorageModule {
+class StorageModule
+{
     /*
     *   Provides Room database instance for injection
     */
     @Singleton
     @Provides
-    fun providesRoomDatabase(context: Context) : HackyDatabase
+    fun providesRoomDatabase(context: Context): HackyDatabase
     {
         return Room
             .databaseBuilder(
                 context,
                 HackyDatabase::class.java,
-                "hacky-database")
+                "hacky-database"
+            )
             .fallbackToDestructiveMigration()
             .build()
     }

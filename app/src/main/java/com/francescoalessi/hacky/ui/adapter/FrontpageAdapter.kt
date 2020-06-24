@@ -14,22 +14,25 @@ import com.francescoalessi.hacky.ui.FrontpageFragmentDirections
 
 class FrontpageAdapter : PagingDataAdapter<Post, FrontpageAdapter.ViewHolder>(DIFF_CALLBACK)
 {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+    {
         val view = ThreadItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
-            false)
+            false
+        )
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int)
+    {
         val item = getItem(position)
         holder.binding.post = item
     }
 
     fun openComments(viewHolder: ViewHolder)
     {
-        if(viewHolder.binding.post?.comments_count ?: 0 > 0)
+        if (viewHolder.binding.post?.comments_count ?: 0 > 0)
         {
             viewHolder.itemView.findNavController().navigate(
                 FrontpageFragmentDirections.actionFrontpageToViewCommentsFragment(
@@ -42,11 +45,12 @@ class FrontpageAdapter : PagingDataAdapter<Post, FrontpageAdapter.ViewHolder>(DI
 
     inner class ViewHolder(val binding: ThreadItemBinding) : RecyclerView.ViewHolder(binding.root)
     {
-        init {
+        init
+        {
             // Handle onClickListener
             binding.setClickListener {
-                val url : String? = binding.post?.url
-                if(!url.isNullOrBlank())
+                val url: String? = binding.post?.url
+                if (!url.isNullOrBlank())
                 {
                     val viewURLIntent = Intent(Intent.ACTION_VIEW)
                     viewURLIntent.data = Uri.parse(url)

@@ -7,12 +7,12 @@
         android:id="@+id/action_share"
         android:icon="@drawable/ic_share_24dp"
         android:orderInCategory="101"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
     <item
         android:title="@string/view_url"
         android:id="@+id/action_view_url"
         android:icon="@drawable/ic_open_in_browser_24dp"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 </menu>

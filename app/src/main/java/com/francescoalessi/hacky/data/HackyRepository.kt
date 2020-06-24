@@ -14,27 +14,31 @@ import javax.inject.Inject
 
 class HackyRepository
 @ExperimentalPagingApi
-@Inject constructor(val hackyDatabase: HackyDatabase, private val postsMediator: PostsRemoteMediator, private val commentsMediator: CommentsRemoteMediator)
+@Inject constructor(
+    private val hackyDatabase: HackyDatabase,
+    private val postsMediator: PostsRemoteMediator,
+    private val commentsMediator: CommentsRemoteMediator
+)
 {
-    fun getPosts() : Flow<PagingData<Post>>
+    fun getPosts(): Flow<PagingData<Post>>
     {
         return Pager(
             // Configure how data is loaded by passing additional properties to
             // PagingConfig, such as prefetchDistance.
             config = PagingConfig(pageSize = 30),
             remoteMediator = postsMediator,
-            pagingSourceFactory = {hackyDatabase.postDao().getPosts()}
+            pagingSourceFactory = { hackyDatabase.postDao().getPosts() }
         )
-        .flow
+            .flow
     }
 
-    fun getPost(postId:Int) : LiveData<Post>
+    fun getPost(postId: Int): LiveData<Post>
     {
         return hackyDatabase.postDao().getPostForId(postId)
     }
 
     @ExperimentalPagingApi
-    fun getCommentsForThread(threadId:Int) : Flow<PagingData<Comment>>
+    fun getCommentsForThread(threadId: Int): Flow<PagingData<Comment>>
     {
         commentsMediator.threadId = threadId
         return Pager(
@@ -42,7 +46,7 @@ class HackyRepository
             // PagingConfig, such as prefetchDistance.
             config = PagingConfig(pageSize = 30),
             remoteMediator = commentsMediator,
-            pagingSourceFactory = {hackyDatabase.postDao().getCommentsForThread(threadId)}
+            pagingSourceFactory = { hackyDatabase.postDao().getCommentsForThread(threadId) }
         ).flow
     }
 }

@@ -12,15 +12,18 @@ class CommentAdapter : PagingDataAdapter<Comment, CommentAdapter.ViewHolder>(
     DIFF_CALLBACK
 )
 {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+    {
         val view = CommentItemBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
-            false)
+            false
+        )
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int)
+    {
         val item = getItem(position)
         val binding = holder.binding
         binding.comment = item

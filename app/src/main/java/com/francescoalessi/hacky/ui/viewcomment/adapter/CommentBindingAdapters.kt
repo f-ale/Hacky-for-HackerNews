@@ -13,9 +13,8 @@ import androidx.databinding.BindingAdapter
 import com.francescoalessi.hacky.model.Comment
 import kotlin.math.roundToInt
 
-
 @BindingAdapter("commentContent")
-fun bindCommentContent(textView: TextView, rawContent:String)
+fun bindCommentContent(textView: TextView, rawContent: String)
 {
     textView.text = rawContent
     Linkify.addLinks(textView, Linkify.WEB_URLS)
@@ -27,7 +26,7 @@ fun bindCommentContent(textView: TextView, rawContent:String)
 @BindingAdapter("commentColor")
 fun bindCommentColor(imageView: ImageView, comment: Comment)
 {
-    if(comment.level > 0)
+    if (comment.level > 0)
         imageView.setImageDrawable(
             ColorDrawable(
                 stringToColor(comment.user ?: "user")
@@ -40,11 +39,11 @@ fun bindCommentColor(imageView: ImageView, comment: Comment)
 @BindingAdapter("timeAgo")
 fun bindTimeAgo(textView: TextView, time: Int)
 {
-    textView.text = DateUtils.getRelativeTimeSpanString(time.toLong()*1000)
+    textView.text = DateUtils.getRelativeTimeSpanString(time.toLong() * 1000)
 }
 
 @BindingAdapter("level")
-fun bindLevel(layout: ConstraintLayout, level:Int)
+fun bindLevel(layout: ConstraintLayout, level: Int)
 {
     val density: Float = layout.context.resources.displayMetrics.density
     val marginParams = (layout.layoutParams as ViewGroup.MarginLayoutParams)
@@ -56,6 +55,7 @@ fun bindLevel(layout: ConstraintLayout, level:Int)
         (1 * density).roundToInt()
     )
 }
+
 /*
  *  Hashing function that generates a consistent color value given a string
  */

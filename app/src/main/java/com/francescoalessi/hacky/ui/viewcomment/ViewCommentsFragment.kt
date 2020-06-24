@@ -27,41 +27,49 @@ import javax.inject.Inject
 
 class ViewCommentsFragment : Fragment()
 {
-    private val args : ViewCommentsFragmentArgs by navArgs()
+    private val args: ViewCommentsFragmentArgs by navArgs()
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: CommentViewModel
     private lateinit var mAdapter: CommentAdapter
     private lateinit var post: Post
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onAttach(context: Context) {
+    override fun onAttach(context: Context)
+    {
         // Enable DI on the fragment
         (activity?.applicationContext as HackyApplication).appComponent.inject(this)
         super.onAttach(context)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View?
+    {
         // Inflate the layout for this fragment using Data Binding
         val binding = FragmentViewCommentsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
+    {
         inflater.inflate(R.menu.menu_read_comments, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when (item.itemId)
         {
-            R.id.action_share -> {
+            R.id.action_share ->
+            {
                 // Share the post in text form
                 val sendIntent = Intent()
                 sendIntent.action = Intent.ACTION_SEND
@@ -79,7 +87,8 @@ class ViewCommentsFragment : Fragment()
                 )
             }
 
-            R.id.action_view_url -> {
+            R.id.action_view_url ->
+            {
                 // View the post URL
                 val viewIntent = Intent()
                 viewIntent.action = Intent.ACTION_VIEW
@@ -96,11 +105,12 @@ class ViewCommentsFragment : Fragment()
 
     @ExperimentalCoroutinesApi
     @ExperimentalPagingApi
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?)
+    {
         super.onActivityCreated(savedInstanceState)
 
         // Retrieve the ViewModel
-        val activity : FragmentActivity = activity as FragmentActivity
+        val activity: FragmentActivity = activity as FragmentActivity
         viewModel = ViewModelProvider(activity, viewModelFactory).get(CommentViewModel::class.java)
 
         // Retrieve the post Id
@@ -131,14 +141,13 @@ class ViewCommentsFragment : Fragment()
          *  Show error message if there is a connection error.
          */
 
-        mAdapter.addLoadStateListener {
-                loadStates ->
+        mAdapter.addLoadStateListener { loadStates ->
             // Show loading widget when data is being loaded
             swipe_refresh_layout.isRefreshing = loadStates.refresh is LoadState.Loading
 
             // Show error message if there is a connection error.
             tv_connection_error.visibility =
-                when(loadStates.refresh)
+                when (loadStates.refresh)
                 {
                     is LoadState.Error -> View.VISIBLE
                     else -> View.INVISIBLE
@@ -165,8 +174,8 @@ class ViewCommentsFragment : Fragment()
     fun fetchCommentsForThread(threadId: Int)
     {
         // Fetch and submit
-        viewLifecycleOwner.lifecycleScope.launch{
-            viewModel.getCommentsForThread(threadId).collectLatest{
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getCommentsForThread(threadId).collectLatest {
                 mAdapter.submitData(it)
             }
         }

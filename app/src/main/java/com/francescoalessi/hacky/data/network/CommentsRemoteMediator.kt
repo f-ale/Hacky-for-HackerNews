@@ -17,15 +17,16 @@ import javax.inject.Inject
 class CommentsRemoteMediator @Inject
 constructor(
     private val hackyDatabase: HackyDatabase,
-    private val hackerNewsService: HackerNewsService) : RemoteMediator<Int, Comment>()
+    private val hackerNewsService: HackerNewsService
+) : RemoteMediator<Int, Comment>()
 {
-    var threadId:Int = 23553325
+    var threadId: Int = 23553325
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, Comment>
     ): MediatorResult
     {
-        when(loadType)
+        when (loadType)
         {
             LoadType.PREPEND -> return MediatorResult.Success(true)
             LoadType.APPEND -> return MediatorResult.Success(true)
@@ -35,10 +36,13 @@ constructor(
                     // Retrieve thread
                     val thread = hackerNewsService.getThread(threadId)
                     // Unpack comments into a linear structure
-                    val comments : MutableList<Comment> = unpackComments(thread.comments.toMutableList(), ArrayList<Comment>(thread.comments_count))
+                    val comments: MutableList<Comment> = unpackComments(
+                        thread.comments.toMutableList(),
+                        ArrayList(thread.comments_count)
+                    )
 
                     // If this is an AskHN thread, we add the thread content as a comment to the comment list
-                    if(!thread.content.isNullOrEmpty())
+                    if (!thread.content.isNullOrEmpty())
                     {
                         val ask = Comment(
                             thread.id * 10,
@@ -48,7 +52,8 @@ constructor(
                             thread.time ?: 0,
                             thread.content,
                             null,
-                            0)
+                            0
+                        )
 
                         comments.add(0, ask)
                     }
@@ -57,16 +62,19 @@ constructor(
 
                     hackyDatabase.withTransaction {
                         // If we're refreshing, we delete stale comments first
-                        if(loadType == LoadType.REFRESH)
+                        if (loadType == LoadType.REFRESH)
                             hackyDatabase.postDao().deleteCommentsForThread(threadId)
                         hackyDatabase.postDao().insertComments(comments)
                     }
                     return MediatorResult.Success(true)
                 }
-                catch (exception: IOException) {
+                catch (exception: IOException)
+                {
                     Log.d("LoadError", "exception: $exception")
                     return MediatorResult.Error(exception)
-                } catch (exception: HttpException) {
+                }
+                catch (exception: HttpException)
+                {
                     Log.d("LoadError", "exception: $exception")
                     return MediatorResult.Error(exception)
                 }
@@ -74,12 +82,15 @@ constructor(
     }
 
     // Turns nested structure into linear
-    private fun unpackComments(sourceList: MutableList<Comment>, targetList: MutableList<Comment>) : MutableList<Comment>
+    private fun unpackComments(
+        sourceList: MutableList<Comment>,
+        targetList: MutableList<Comment>
+    ): MutableList<Comment>
     {
-        for(comment in sourceList)
+        for (comment in sourceList)
         {
             targetList.add(comment)
-            if(!comment.comments.isNullOrEmpty())
+            if (!comment.comments.isNullOrEmpty())
             {
                 unpackComments(comment.comments!!.toMutableList(), targetList)
             }
@@ -88,9 +99,9 @@ constructor(
         return targetList
     }
 
-    private fun setMetadata(comments: List<Comment>, threadId:Int)
+    private fun setMetadata(comments: List<Comment>, threadId: Int)
     {
-        for(comment in comments)
+        for (comment in comments)
         {
             comment.parentId = threadId
             comment.rank = comments.indexOf(comment)

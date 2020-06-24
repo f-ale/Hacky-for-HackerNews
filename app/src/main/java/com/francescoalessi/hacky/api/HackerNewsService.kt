@@ -6,17 +6,18 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface HackerNewsService {
+interface HackerNewsService
+{
     /*
      *  Defines the queries to retrieve results from the HN API
      */
     @GET("/news")
     suspend fun getPosts(
         @Query("page") page: Int
-    ) : List<Post>
+    ): List<Post>
 
     @GET("/item/{id}")
     suspend fun getThread(
         @Path("id") id: Int
-    ) : Thread
+    ): Thread
 }

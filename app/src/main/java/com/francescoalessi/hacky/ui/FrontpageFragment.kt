@@ -21,13 +21,15 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class FrontpageFragment : Fragment() {
+class FrontpageFragment : Fragment()
+{
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: FrontpageViewModel
     private lateinit var mAdapter: FrontpageAdapter
 
-    override fun onAttach(context: Context) {
+    override fun onAttach(context: Context)
+    {
         // Enable DI on the fragment
         (activity?.applicationContext as HackyApplication).appComponent.inject(this)
         super.onAttach(context)
@@ -36,7 +38,8 @@ class FrontpageFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View?
+    {
         // Inflate the layout for this fragment using Data Binding
         val binding = FragmentFrontpageBinding.inflate(inflater, container, false)
         return binding.root
@@ -44,11 +47,13 @@ class FrontpageFragment : Fragment() {
 
     @ExperimentalPagingApi
     @ExperimentalCoroutinesApi
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?)
+    {
         super.onActivityCreated(savedInstanceState)
 
-        val activity : FragmentActivity = activity as FragmentActivity
-        viewModel = ViewModelProvider(activity, viewModelFactory).get(FrontpageViewModel::class.java)
+        val activity: FragmentActivity = activity as FragmentActivity
+        viewModel =
+            ViewModelProvider(activity, viewModelFactory).get(FrontpageViewModel::class.java)
 
         /*
          *  Set up the recyclerview
@@ -65,14 +70,13 @@ class FrontpageFragment : Fragment() {
         /*
          *  Listen to changes in the Load states
          */
-        mAdapter.addLoadStateListener {
-            loadStates ->
+        mAdapter.addLoadStateListener { loadStates ->
             // Show loading widget when data is being loaded
             swipe_refresh_layout.isRefreshing = loadStates.refresh is LoadState.Loading
 
             // Show error message if there is a connection error.
             tv_connection_error.visibility =
-                when(loadStates.refresh)
+                when (loadStates.refresh)
                 {
                     is LoadState.Error -> View.VISIBLE
                     else -> View.INVISIBLE
@@ -100,8 +104,8 @@ class FrontpageFragment : Fragment() {
     fun fetchFrontpagePosts()
     {
         // Fetch and submit
-        viewLifecycleOwner.lifecycleScope.launch{
-            viewModel.posts.collectLatest{
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.posts.collectLatest {
                 mAdapter.submitData(it)
             }
         }
