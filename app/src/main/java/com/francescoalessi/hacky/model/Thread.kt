@@ -18,5 +18,6 @@ data class Thread(
     val url:String?,
     val domain:String?,
     val comments:List<Comment>,
-    val comments_count:Int
+    val comments_count:Int,
+    val content:String?
 )

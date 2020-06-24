@@ -32,7 +32,21 @@ constructor(val hackyDatabase: HackyDatabase,
                 try
                 {
                     val thread = hackerNewsService.getThread(threadId)
-                    val comments : List<Comment> = unpackComments(thread.comments.toMutableList(), ArrayList<Comment>(thread.comments_count))
+                    val comments : MutableList<Comment> = unpackComments(thread.comments.toMutableList(), ArrayList<Comment>(thread.comments_count))
+                    if(!thread.content.isNullOrEmpty())
+                    {
+                        val ask = Comment(
+                            thread.id * 10,
+                            thread.id,
+                            0,
+                            thread.user,
+                            thread.time ?: 0,
+                            thread.content,
+                            null,
+                            0)
+
+                        comments.add(0, ask)
+                    }
                     setMetadata(comments, threadId)
 
                     hackyDatabase.withTransaction {
