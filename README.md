@@ -7,7 +7,7 @@ Hacky is a Hacker News reader app for Android.
 
 It provides a convenient way to read posts and comments from the Hacker News frontpage. Comments can also be read offline once loaded.
 
-Hacky is built with Android Architecture Components (Room, LiveData, ViewModel) following the MVVM design pattern.
+Hacky is built with Android Architecture Components following the MVVM design pattern.
 
 ## Third Party Tech & Libraries
 ### Libraries
@@ -15,10 +15,15 @@ Hacky is built with Android Architecture Components (Room, LiveData, ViewModel) 
     * LiveData
     * Room
     * ViewModel
- * Volley
+    * Navigation
+    * Paging 3
+ * Retrofit 2
+ * Moshi
+ * Dagger 2
+ * Kotlin Coroutines
+ * Kotlin Flow
  
  ### APIs
- * Hacker News Official API
  * Node-HN Unofficial API
 
 
