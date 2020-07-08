@@ -145,22 +145,24 @@ class ViewCommentsFragment : Fragment()
             // Show loading widget when data is being loaded
             swipe_refresh_layout.isRefreshing = loadStates.refresh is LoadState.Loading
 
+            val isError = loadStates.mediator?.refresh is LoadState.Error
+                    && loadStates.source.refresh is LoadState.Error
             // Show error message if there is a connection error.
             tv_connection_error.visibility =
-                when (loadStates.refresh)
+                when (isError)
                 {
-                    is LoadState.Error -> View.VISIBLE
-                    else -> View.INVISIBLE
+                    true -> View.VISIBLE
+                    false -> View.INVISIBLE
                 }
             rv_comments.visibility = // Hide the recyclerview when we show an error.
-                when (loadStates.refresh)
+                when (isError)
                 {
-                    is LoadState.Error -> View.INVISIBLE
-                    else -> View.VISIBLE
+                    true -> View.INVISIBLE
+                    false -> View.VISIBLE
                 }
 
         }
-
+        
         swipe_refresh_layout.setOnRefreshListener {
             mAdapter.refresh() // Refresh data when the user requests it
         }

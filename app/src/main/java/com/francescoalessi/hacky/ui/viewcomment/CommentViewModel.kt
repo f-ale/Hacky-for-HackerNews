@@ -14,10 +14,19 @@ import javax.inject.Inject
 
 class CommentViewModel @Inject constructor(private val repository: HackyRepository) : ViewModel()
 {
+    var currentThreadId:Int = -1
+    lateinit var comment: Flow<PagingData<Comment>>
+
     @ExperimentalPagingApi
     fun getCommentsForThread(threadId: Int): Flow<PagingData<Comment>>
     {
-        return repository.getCommentsForThread(threadId).cachedIn(viewModelScope)
+        if(threadId != currentThreadId)
+        {
+            currentThreadId = threadId
+            comment = repository.getCommentsForThread(threadId).cachedIn(viewModelScope)
+        }
+
+        return comment
     }
 
     fun getPost(postId: Int): LiveData<Post>
