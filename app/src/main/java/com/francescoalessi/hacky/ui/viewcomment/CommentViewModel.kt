@@ -14,8 +14,8 @@ import javax.inject.Inject
 
 class CommentViewModel @Inject constructor(private val repository: HackyRepository) : ViewModel()
 {
-    var currentThreadId:Int = -1
-    lateinit var comment: Flow<PagingData<Comment>>
+    private var currentThreadId:Int = -1
+    private lateinit var comment: Flow<PagingData<Comment>>
 
     @ExperimentalPagingApi
     fun getCommentsForThread(threadId: Int): Flow<PagingData<Comment>>

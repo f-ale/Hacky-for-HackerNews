@@ -83,6 +83,7 @@ class FrontpageFragment : Fragment()
                     true -> View.VISIBLE
                     false -> View.INVISIBLE
                 }
+            
             rv_stories.visibility = // Hide the recyclerview when we show an error.
                 when (isError)
                 {

@@ -28,8 +28,7 @@ class HackyRepository
             config = PagingConfig(pageSize = 30),
             remoteMediator = postsMediator,
             pagingSourceFactory = { hackyDatabase.postDao().getPosts() }
-        )
-            .flow
+        ).flow
     }
 
     fun getPost(postId: Int): LiveData<Post>
