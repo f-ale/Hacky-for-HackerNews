@@ -41,23 +41,17 @@ constructor(
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
             LoadType.REFRESH ->
             {
-                startPage
-            } // When refreshing, we start fetching from the beginning
+                startPage // When refreshing, we start fetching from the beginning
+            }
         }
         try
         {
-            val posts = hackerNewsService.getPosts(currentPage)
-
-            for (i in posts)
-            {
-                i.rank = posts.indexOf(i) + ((currentPage - 1) * 30)
-            }
+            val posts = getPostsAndAssignRank()
 
             hackyDatabase.withTransaction {
-                if (loadType == LoadType.REFRESH)
-                    hackyDatabase.postDao().deleteAllPosts()
-                hackyDatabase.postDao().insertPosts(posts)
+                savePostsToDb(posts, loadType)
             }
+
             return MediatorResult.Success(currentPage >= 10 || posts.isEmpty())
         }
         catch (exception: IOException)
@@ -70,5 +64,24 @@ constructor(
             Log.d("LoadError", "exception: $exception")
             return MediatorResult.Error(exception)
         }
+    }
+
+    suspend fun getPostsAndAssignRank(): List<Post>
+    {
+        val posts = hackerNewsService.getPosts(currentPage)
+
+        for (i in posts)
+        {
+            i.rank = posts.indexOf(i) + ((currentPage - 1) * 30)
+        }
+
+        return posts
+    }
+
+    suspend fun savePostsToDb(posts: List<Post>, loadType: LoadType)
+    {
+        if (loadType == LoadType.REFRESH)
+            hackyDatabase.postDao().deleteAllPosts()
+        hackyDatabase.postDao().insertPosts(posts)
     }
 }

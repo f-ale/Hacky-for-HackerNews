@@ -46,7 +46,7 @@ class FrontpageViewModelTest
 
 object FakePostFactory // TODO: Extract to shared test directory
 {
-    val faker = Faker()
+    private val faker = Faker()
 
     fun makePost() : Post
     {
