@@ -11,6 +11,7 @@ import com.francescoalessi.hacky.data.HackyDatabase
 import com.francescoalessi.hacky.model.Post
 import com.github.javafaker.Faker
 import com.nhaarman.mockitokotlin2.*
+import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
@@ -62,6 +63,31 @@ class PostsRemoteMediatorTest
             mediator.savePostsToDb(posts, LoadType.APPEND)
 
             verify(spyDatabase.postDao()).insertPosts(any())
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    @ExperimentalPagingApi
+    @Test
+    fun savePostsToDb_shouldSavePostsToDatabase_withSamePostsProvidedByApi()
+    {
+        runBlockingTest{
+            val posts = FakePostFactory.makePostList(100)
+            val mockService: HackerNewsService = mock()
+            val spyDatabase = spy(hackyDatabase)
+            whenever(spyDatabase.postDao()).thenReturn(spy(hackyDatabase.postDao()))
+
+            val mediator = PostsRemoteMediator(spyDatabase, mockService)
+
+            mediator.savePostsToDb(posts, LoadType.APPEND)
+
+            argumentCaptor<List<Post>>{
+                verify(spyDatabase.postDao()).insertPosts(capture())
+
+                assertEquals(firstValue.size, posts.size)
+                assertEquals(firstValue, posts)
+            }
+
         }
     }
 

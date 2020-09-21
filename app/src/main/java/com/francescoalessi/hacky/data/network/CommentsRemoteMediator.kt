@@ -61,11 +61,9 @@ constructor(
                     setMetadata(comments, threadId)
 
                     hackyDatabase.withTransaction {
-                        // If we're refreshing, we delete stale comments first
-                        if (loadType == LoadType.REFRESH)
-                            hackyDatabase.postDao().deleteCommentsForThread(threadId)
-                        hackyDatabase.postDao().insertComments(comments)
+                        saveCommentsToDb(comments, loadType)
                     }
+
                     return MediatorResult.Success(true)
                 }
                 catch (exception: IOException)
@@ -97,6 +95,14 @@ constructor(
         }
 
         return targetList
+    }
+
+    suspend fun saveCommentsToDb(comments: List<Comment>, loadType: LoadType)
+    {
+        // If we're refreshing, we delete stale comments first
+        if (loadType == LoadType.REFRESH)
+            hackyDatabase.postDao().deleteCommentsForThread(threadId)
+        hackyDatabase.postDao().insertComments(comments)
     }
 
     private fun setMetadata(comments: List<Comment>, threadId: Int)
